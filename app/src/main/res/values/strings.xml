@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vinilos</string>
+    <string name="home_title">Albums</string>
+    <string name="loading">Loading...</string>
+    <string name="error">Error loading albums</string>
+</resources>

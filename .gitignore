@@ -1,0 +1,41 @@
+# Gradle
+.gradle/
+build/
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Locks and caches
+*.lock
+fileHashes.lock
+.gradle/caches/
+
+# Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+
+# Build outputs
+app/build/
+local.properties
+captures/
+
+# IDE
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Kotlin
+.kotlin/
+
+# Misc
+*.log
+.gradle.properties
