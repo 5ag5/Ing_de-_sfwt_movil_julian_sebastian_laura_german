@@ -5,4 +5,9 @@ import retrofit2.http.GET
 interface VinilosApiService {
     @GET("albums")
     suspend fun getAlbums(): List<AlbumDto>
+
+    @GET("albums/{albumId}")
+    suspend fun getAlbumById(
+        @Path("albumId") albumId: Int
+    ): Album
 }

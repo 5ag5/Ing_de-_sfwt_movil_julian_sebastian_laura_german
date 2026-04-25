@@ -11,11 +11,21 @@ import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        lifecycleScope.launch {
+            try {
+                val albums = AppModule.apiService.getAlbums()
+                Log.d("VinilosTest", "Álbumes recibidos: $albums")
+            } catch (e: Exception) {
+                Log.e("VinilosTest", "Error llamando backend", e)
+            }
+        }
         setContent {
             VinilosTheme {
                 val viewModel = AlbumViewModel(AppModule.getAlbumsUseCase)
                 HomeScreen(viewModel)
             }
         }
+
     }
 }
