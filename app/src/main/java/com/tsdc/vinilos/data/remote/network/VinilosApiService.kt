@@ -1,6 +1,8 @@
 package com.tsdc.vinilos.data.remote.network
 import com.tsdc.vinilos.data.remote.dto.AlbumDto
 import retrofit2.http.GET
+import retrofit2.http.Path
+import com.tsdc.vinilos.domain.models.Album
 
 interface VinilosApiService {
     @GET("albums")
