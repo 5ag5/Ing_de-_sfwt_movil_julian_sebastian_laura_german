@@ -9,8 +9,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object AppModule {
-    // Emulador: 10.0.2.2 apunta a localhost de tu PC
-    // Dispositivo físico: usar IP WiFi de tu PC (ej. 192.168.1.X)
+
     private const val BASE_URL = "http://10.0.2.2:3000/"
     
     private val retrofit: Retrofit by lazy {

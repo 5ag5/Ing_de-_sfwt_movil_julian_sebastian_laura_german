@@ -42,8 +42,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.activity:activity-compose:1.8.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2") // ✅ Necesario para ViewModels
-
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2") 
     // Standard Android UI Libraries (Required for XML Themes)
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
@@ -57,7 +56,7 @@ dependencies {
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
-    kapt("androidx.room:room-compiler:$roomVersion") // ✅ El "traductor" de la base de datos
+    kapt("androidx.room:room-compiler:$roomVersion") 
 
     // Coroutines (Asincronía)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
