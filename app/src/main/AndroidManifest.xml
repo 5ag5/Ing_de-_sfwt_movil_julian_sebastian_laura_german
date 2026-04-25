@@ -8,7 +8,8 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="Vinilos App"
-        android:theme="@style/Theme.Vinilos">
+        android:theme="@style/Theme.Vinilos"
+        android:usesCleartextTraffic="true">
         
         <activity
             android:name=".ui.MainActivity"

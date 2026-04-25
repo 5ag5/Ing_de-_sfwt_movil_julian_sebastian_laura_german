@@ -9,8 +9,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -46,7 +46,7 @@ fun HomeScreen(viewModel: AlbumViewModel, initialTab: Int = 0) {
     val navLabels = listOf("Home", "Albums", "Artists", "Collectors")
     val navIcons = listOf(
         Icons.Filled.Home,
-        Icons.Filled.MusicNote,
+        Icons.Filled.Star,
         Icons.Filled.Person,
         Icons.Filled.Favorite
     )

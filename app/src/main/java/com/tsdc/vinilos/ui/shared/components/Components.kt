@@ -3,8 +3,8 @@ package com.tsdc.vinilos.ui.shared.components
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -21,7 +21,7 @@ data class NavItem(val label: String, val icon: ImageVector)
 
 val vinilosNavItems = listOf(
     NavItem("Home", Icons.Filled.Home),
-    NavItem("Albums", Icons.Filled.MusicNote),
+    NavItem("Albums", Icons.Filled.Star),
     NavItem("Artists", Icons.Filled.Person),
     NavItem("Collectors", Icons.Filled.Favorite),
 )
