@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.tsdc.vinilos.di.AppModule
 import com.tsdc.vinilos.ui.screens.HomeScreen
-import com.tsdc.vinilos.ui.theme.VinilosTheme
+import com.tsdc.vinilos.ui.shared.theme.VinilosTheme
 import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
 
 class MainActivity : ComponentActivity() {

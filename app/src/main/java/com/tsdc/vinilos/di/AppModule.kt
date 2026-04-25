@@ -9,7 +9,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object AppModule {
-    private const val BASE_URL = "https://api.example.com/"
+    private const val BASE_URL = "https://back-vinyls.onrender.com/"
     
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
@@ -27,7 +27,7 @@ object AppModule {
     }
     
     val albumRepository: AlbumRepository by lazy {
-        AlbumRepositoryImpl(serviceAdapter) as AlbumRepository
+        AlbumRepositoryImpl(serviceAdapter)
     }
     
     val getAlbumsUseCase: GetAlbumsUseCase by lazy {

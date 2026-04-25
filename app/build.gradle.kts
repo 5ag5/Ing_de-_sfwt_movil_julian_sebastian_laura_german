@@ -21,7 +21,16 @@ android {
     }
     
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.14"
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
     }
 }
 
@@ -29,9 +38,16 @@ dependencies {
     // UI - Jetpack Compose
     implementation(platform("androidx.compose:compose-bom:2023.10.01"))
     implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material:material-icons-extended")
+    debugImplementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2") // ✅ Necesario para ViewModels
+
+    // Standard Android UI Libraries (Required for XML Themes)
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
 
     // Networking - Retrofit & OkHttp
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -46,4 +62,10 @@ dependencies {
 
     // Coroutines (Asincronía)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // Image loading - Coil
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // Compose Foundation (animations, backgrounds)
+    implementation("androidx.compose.foundation:foundation")
 }
