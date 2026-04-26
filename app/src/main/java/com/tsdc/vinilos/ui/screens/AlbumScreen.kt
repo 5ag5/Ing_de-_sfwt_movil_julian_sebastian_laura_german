@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -109,6 +110,7 @@ fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
             value = searchQuery,
             onValueChange = { searchQuery = it },
             modifier = Modifier
+                .testTag("album_search_field")
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             placeholder = {
@@ -206,7 +208,11 @@ fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
             }
 
             else -> {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .testTag("album_list")
+                ) {
                     items(filteredAlbums) { album ->
                         AlbumItem(
                             album = album,
