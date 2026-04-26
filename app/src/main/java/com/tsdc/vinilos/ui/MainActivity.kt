@@ -13,6 +13,7 @@ import com.tsdc.vinilos.di.AppModule
 import com.tsdc.vinilos.ui.screens.AlbumDetailScreen
 import com.tsdc.vinilos.ui.screens.HomeScreen
 import com.tsdc.vinilos.ui.shared.theme.VinilosTheme
+import com.tsdc.vinilos.ui.viewmodels.AlbumDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
@@ -32,6 +33,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             VinilosTheme {
                 val viewModel = AlbumViewModel(AppModule.getAlbumsUseCase)
+                val detailViewModel = AlbumDetailViewModel(AppModule.getAlbumByIdUseCase)
                 val navController = rememberNavController()
 
                 NavHost(navController = navController, startDestination = "home") {
@@ -58,6 +60,7 @@ class MainActivity : ComponentActivity() {
                     ) { backStackEntry ->
                         val albumId = backStackEntry.arguments?.getInt("albumId") ?: -1
                         AlbumDetailScreen(
+                            viewModel = detailViewModel,
                             albumId = albumId,
                             onBack = {
                                 navController.navigate("home_albums") {
