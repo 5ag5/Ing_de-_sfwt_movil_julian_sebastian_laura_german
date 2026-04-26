@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -72,6 +73,7 @@ fun HomeScreen(viewModel: AlbumViewModel, initialTab: Int = 0) {
             NavigationBar(containerColor = Color.White) {
                 navLabels.forEachIndexed { index, label ->
                     NavigationBarItem(
+                        modifier = if (index == 1) Modifier.testTag("nav_albums") else Modifier,
                         selected = selectedIndex == index,
                         onClick = { selectedIndex = index },
                         icon = {
