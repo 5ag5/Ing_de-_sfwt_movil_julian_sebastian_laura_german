@@ -36,11 +36,18 @@ import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(viewModel = AlbumViewModel(AppModule.getAlbumsUseCase))
+    HomeScreen(
+        viewModel = AlbumViewModel(AppModule.getAlbumsUseCase),
+        onAlbumClick = {}
+    )
 }
 
 @Composable
-fun HomeScreen(viewModel: AlbumViewModel, initialTab: Int = 0) {
+fun HomeScreen(
+    viewModel: AlbumViewModel,
+    initialTab: Int = 0,
+    onAlbumClick: (Int) -> Unit
+) {
     var selectedIndex by remember { mutableIntStateOf(initialTab) }
 
     val navLabels = listOf("Home", "Albums", "Artists", "Collectors")
@@ -102,7 +109,10 @@ fun HomeScreen(viewModel: AlbumViewModel, initialTab: Int = 0) {
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             when (selectedIndex) {
                 0 -> WelcomeScreen()
-                1 -> AlbumScreen(viewModel)
+                1 -> AlbumScreen(
+                    viewModel = viewModel,
+                    onAlbumClick = onAlbumClick
+                )
                 2 -> PlaceholderScreen("Artists")
                 3 -> PlaceholderScreen("Collectors")
             }

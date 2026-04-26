@@ -2,6 +2,7 @@ package com.tsdc.vinilos.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,16 +35,18 @@ fun AlbumItemPreview() {
             description = "El álbum más vendido de la historia",
             genre = "Pop / R&B",
             recordLabel = "Epic Records"
-        )
+        ),
+        onClick = {}
     )
 }
 
 @Composable
-fun AlbumItem(album: Album) {
+fun AlbumItem(album: Album, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

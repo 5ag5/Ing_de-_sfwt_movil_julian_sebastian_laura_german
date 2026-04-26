@@ -4,7 +4,13 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.tsdc.vinilos.di.AppModule
+import com.tsdc.vinilos.ui.screens.AlbumDetailScreen
 import com.tsdc.vinilos.ui.screens.HomeScreen
 import com.tsdc.vinilos.ui.shared.theme.VinilosTheme
 import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
@@ -26,7 +32,41 @@ class MainActivity : ComponentActivity() {
         setContent {
             VinilosTheme {
                 val viewModel = AlbumViewModel(AppModule.getAlbumsUseCase)
-                HomeScreen(viewModel)
+                val navController = rememberNavController()
+
+                NavHost(navController = navController, startDestination = "home") {
+                    composable("home") {
+                        HomeScreen(
+                            viewModel = viewModel,
+                            onAlbumClick = { albumId ->
+                                navController.navigate("album_detail/$albumId")
+                            }
+                        )
+                    }
+                    composable("home_albums") {
+                        HomeScreen(
+                            viewModel = viewModel,
+                            initialTab = 1,
+                            onAlbumClick = { albumId ->
+                                navController.navigate("album_detail/$albumId")
+                            }
+                        )
+                    }
+                    composable(
+                        route = "album_detail/{albumId}",
+                        arguments = listOf(navArgument("albumId") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val albumId = backStackEntry.arguments?.getInt("albumId") ?: -1
+                        AlbumDetailScreen(
+                            albumId = albumId,
+                            onBack = {
+                                navController.navigate("home_albums") {
+                                    popUpTo("home") { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+                }
             }
         }
 
