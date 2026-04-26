@@ -211,41 +211,7 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 ---
 
-## 9. Ejecutar el frontend Angular
-
-Si el proyecto también incluye una aplicación web en Angular, entrar a la carpeta correspondiente:
-
-```bash
-cd frontend
-```
-
-Instalar dependencias:
-
-```bash
-npm install
-```
-
-Ejecutar Angular:
-
-```bash
-npm start
-```
-
-o:
-
-```bash
-ng serve
-```
-
-La aplicación normalmente queda disponible en:
-
-```txt
-http://localhost:4200
-```
-
----
-
-## 10. Problemas comunes
+## 9. Problemas comunes
 
 ### Error: `nest is not recognized`
 
@@ -300,7 +266,7 @@ android:usesCleartextTraffic="true"
 
 ---
 
-## 11. Flujo recomendado de ejecución
+## 10. Flujo recomendado de ejecución
 
 1. Levantar PostgreSQL.
 2. Ejecutar backend NestJS.
