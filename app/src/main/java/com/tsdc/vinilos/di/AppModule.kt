@@ -4,14 +4,14 @@ import com.tsdc.vinilos.data.remote.network.ServiceAdapter
 import com.tsdc.vinilos.data.remote.network.VinilosApiService
 import com.tsdc.vinilos.data.repositories.AlbumRepository as AlbumRepositoryImpl
 import com.tsdc.vinilos.domain.repositories.AlbumRepository
+import com.tsdc.vinilos.domain.usecases.GetAlbumByIdUseCase
 import com.tsdc.vinilos.domain.usecases.GetAlbumsUseCase
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object AppModule {
-    // Emulador: 10.0.2.2 apunta a localhost de tu PC
-    // Dispositivo físico: usar IP WiFi de tu PC (ej. 192.168.1.X)
-    private const val BASE_URL = "http://10.0.2.2:3000/"
+
+    private const val BASE_URL = "https://backvynils-production-5c50.up.railway.app/"
     
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
@@ -34,5 +34,9 @@ object AppModule {
     
     val getAlbumsUseCase: GetAlbumsUseCase by lazy {
         GetAlbumsUseCase(albumRepository)
+    }
+
+    val getAlbumByIdUseCase: GetAlbumByIdUseCase by lazy {
+        GetAlbumByIdUseCase(albumRepository)
     }
 }

@@ -33,7 +33,11 @@ class AlbumScreenEspressoTest {
                 val viewModel = remember {
                     AlbumViewModel(GetAlbumsUseCase(FakeAlbumRepository()))
                 }
-                HomeScreen(viewModel = viewModel, initialTab = 0)
+                HomeScreen(
+                    viewModel = viewModel,
+                    initialTab = 0,
+                    onAlbumClick = {}
+                )
             }
         }
     }

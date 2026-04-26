@@ -55,12 +55,13 @@ import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
 fun AlbumScreenPreview() {
     HomeScreen(
         viewModel = AlbumViewModel(AppModule.getAlbumsUseCase),
-        initialTab = 1
+        initialTab = 1,
+        onAlbumClick = {}
     )
 }
 
 @Composable
-fun AlbumScreen(viewModel: AlbumViewModel) {
+fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
     val albums by viewModel.albums.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
@@ -212,7 +213,12 @@ fun AlbumScreen(viewModel: AlbumViewModel) {
                         .fillMaxSize()
                         .testTag("album_list")
                 ) {
-                    items(filteredAlbums) { album -> AlbumItem(album) }
+                    items(filteredAlbums) { album ->
+                        AlbumItem(
+                            album = album,
+                            onClick = { onAlbumClick(album.id) }
+                        )
+                    }
                 }
             }
         }
