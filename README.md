@@ -297,6 +297,3 @@ Luego en Android:
 * Mantener el backend corriendo antes de probar la app móvil.
 
 ```
-
-Pequeña corrección: el backend que estabas usando es **NestJS**, no NextJS.
-```
