@@ -29,11 +29,10 @@ class AlbumDetailE2ETest {
         composeRule.onNodeWithText("ALBUMS").performClick()
 
         composeRule.waitUntil(timeoutMillis = 20_000) {
-            runCatching {
-                composeRule
-                    .onAllNodesWithTag(UiTestTags.ALBUM_LIST_ITEM, useUnmergedTree = true)
-                    .onFirst()
-            }.isSuccess
+            composeRule
+                .onAllNodesWithTag(UiTestTags.ALBUM_LIST_ITEM, useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isNotEmpty()
         }
 
         composeRule
