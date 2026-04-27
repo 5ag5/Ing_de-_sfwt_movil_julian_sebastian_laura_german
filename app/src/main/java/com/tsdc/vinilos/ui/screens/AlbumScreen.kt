@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -54,12 +55,13 @@ import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
 fun AlbumScreenPreview() {
     HomeScreen(
         viewModel = AlbumViewModel(AppModule.getAlbumsUseCase),
-        initialTab = 1
+        initialTab = 1,
+        onAlbumClick = {}
     )
 }
 
 @Composable
-fun AlbumScreen(viewModel: AlbumViewModel) {
+fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
     val albums by viewModel.albums.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
@@ -108,6 +110,7 @@ fun AlbumScreen(viewModel: AlbumViewModel) {
             value = searchQuery,
             onValueChange = { searchQuery = it },
             modifier = Modifier
+                .testTag("album_search_field")
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             placeholder = {
@@ -205,8 +208,17 @@ fun AlbumScreen(viewModel: AlbumViewModel) {
             }
 
             else -> {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(filteredAlbums) { album -> AlbumItem(album) }
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .testTag("album_list")
+                ) {
+                    items(filteredAlbums) { album ->
+                        AlbumItem(
+                            album = album,
+                            onClick = { onAlbumClick(album.id) }
+                        )
+                    }
                 }
             }
         }

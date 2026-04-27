@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,11 +37,18 @@ import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(viewModel = AlbumViewModel(AppModule.getAlbumsUseCase))
+    HomeScreen(
+        viewModel = AlbumViewModel(AppModule.getAlbumsUseCase),
+        onAlbumClick = {}
+    )
 }
 
 @Composable
-fun HomeScreen(viewModel: AlbumViewModel, initialTab: Int = 0) {
+fun HomeScreen(
+    viewModel: AlbumViewModel,
+    initialTab: Int = 0,
+    onAlbumClick: (Int) -> Unit
+) {
     var selectedIndex by remember { mutableIntStateOf(initialTab) }
 
     val navLabels = listOf("Home", "Albums", "Artists", "Collectors")
@@ -72,6 +80,7 @@ fun HomeScreen(viewModel: AlbumViewModel, initialTab: Int = 0) {
             NavigationBar(containerColor = Color.White) {
                 navLabels.forEachIndexed { index, label ->
                     NavigationBarItem(
+                        modifier = if (index == 1) Modifier.testTag("nav_albums") else Modifier,
                         selected = selectedIndex == index,
                         onClick = { selectedIndex = index },
                         icon = {
@@ -102,7 +111,10 @@ fun HomeScreen(viewModel: AlbumViewModel, initialTab: Int = 0) {
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             when (selectedIndex) {
                 0 -> WelcomeScreen()
-                1 -> AlbumScreen(viewModel)
+                1 -> AlbumScreen(
+                    viewModel = viewModel,
+                    onAlbumClick = onAlbumClick
+                )
                 2 -> PlaceholderScreen("Artists")
                 3 -> PlaceholderScreen("Collectors")
             }
