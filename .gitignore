@@ -22,6 +22,7 @@ fileHashes.lock
 app/build/
 local.properties
 captures/
+!deliverables/apk/*.apk
 
 # IDE
 .vscode/
