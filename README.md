@@ -1,9 +1,6 @@
-````md
 # Vinilos - Aplicación Móvil Android
 
 Aplicación móvil Android desarrollada en Kotlin para la plataforma Vinilos. La app consume una API REST desarrollada en NestJS y permite consultar el catálogo de álbumes y el detalle de cada álbum.
-
----
 
 ## Requisitos previos
 
@@ -18,8 +15,6 @@ Antes de ejecutar el proyecto, asegúrate de tener instalado:
 - Docker Desktop
 - Postman, opcional
 - JDK 17 o superior, preferiblemente el JBR incluido con Android Studio
-
----
 
 ## 1. Clonar el repositorio
 
@@ -296,4 +291,13 @@ Luego en Android:
 * Usar `10.0.2.2` para que el emulador Android pueda consumir servicios locales.
 * Mantener el backend corriendo antes de probar la app móvil.
 
+---
+## APK hubicacion y Release
+
 ```
+- El APK de la aplicacion se encuentra en la rama principal que es la rama main.
+      - La ruta exacta del APK esta en: deliverables/apk/app-v0.apk
+- El release Sprint 1, incluye una actalizacion de .gitignore para que incluya los archivos APK files, el app-v0.apk en deliverables y tambien el source code.
+
+```
+
