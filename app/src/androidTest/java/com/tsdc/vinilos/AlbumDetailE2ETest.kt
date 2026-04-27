@@ -23,17 +23,15 @@ class AlbumDetailE2ETest {
     @get:Rule
     val composeRule = createAndroidComposeRule<MainActivity>()
 
-    @Test
-    fun fromAlbumsTab_tapFirstItem_showsAlbumDetail() {
+    private fun openFirstAlbumDetail() {
         composeRule.onNodeWithText("ALBUMS").assertExists()
         composeRule.onNodeWithText("ALBUMS").performClick()
 
         composeRule.waitUntil(timeoutMillis = 20_000) {
-            runCatching {
-                composeRule
-                    .onAllNodesWithTag(UiTestTags.ALBUM_LIST_ITEM, useUnmergedTree = true)
-                    .onFirst()
-            }.isSuccess
+            composeRule
+                .onAllNodesWithTag(UiTestTags.ALBUM_LIST_ITEM, useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isNotEmpty()
         }
 
         composeRule
@@ -41,7 +39,46 @@ class AlbumDetailE2ETest {
             .onFirst()
             .performClick()
 
+        composeRule.onNodeWithTag(UiTestTags.ALBUM_DETAIL_ROOT, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun fromAlbumsTab_tapFirstItem_showsAlbumDetail() {
+        openFirstAlbumDetail()
+
         composeRule.onNodeWithText("Detalle del álbum").assertIsDisplayed()
         composeRule.onNodeWithTag(UiTestTags.ALBUM_DETAIL_ROOT, useUnmergedTree = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun fromAlbumsTab_tapFirstItem_showsAlbumMetadata() {
+        openFirstAlbumDetail()
+
+        composeRule.onNodeWithText("Fecha de lanzamiento").assertIsDisplayed()
+        composeRule.onNodeWithText("Género").assertIsDisplayed()
+        composeRule.onNodeWithText("Sello discográfico").assertIsDisplayed()
+    }
+
+    @Test
+    fun fromAlbumsTab_tapFirstItem_showsDescriptionAndBackButton() {
+        openFirstAlbumDetail()
+
+        composeRule.onNodeWithText("Descripción").assertIsDisplayed()
+        composeRule.onNodeWithText("Volver").assertIsDisplayed()
+    }
+
+    @Test
+    fun fromAlbumDetail_tapBack_returnsToAlbumsTab() {
+        openFirstAlbumDetail()
+
+        composeRule.onNodeWithText("Volver").performClick()
+
+        composeRule.onNodeWithText("YOUR LIBRARY").assertIsDisplayed()
+        composeRule.waitUntil(timeoutMillis = 20_000) {
+            composeRule
+                .onAllNodesWithTag(UiTestTags.ALBUM_LIST_ITEM, useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
     }
 }
