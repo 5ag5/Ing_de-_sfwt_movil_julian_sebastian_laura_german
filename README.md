@@ -294,10 +294,10 @@ Luego en Android:
 ---
 ## APK hubicacion y Release
 
-```
-- El APK de la aplicacion se encuentra en la rama principal que es la rama main.
-      - La ruta exacta del APK esta en: deliverables/apk/app-v0.apk
-- El release Sprint 1, incluye una actalizacion de .gitignore para que incluya los archivos APK files, el app-v0.apk en deliverables y tambien el source code.
 
-```
+* El APK de la aplicacion se encuentra en la rama principal que es la rama main.
+* La ruta exacta del APK esta en: deliverables/apk/app-v0.apk
+* El release Sprint 1, incluye una actalizacion de .gitignore para que incluya los archivos APK files, el app-v0.apk en deliverables y tambien el source code.
+
+
 
