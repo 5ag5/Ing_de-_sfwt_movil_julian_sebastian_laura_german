@@ -1,6 +1,7 @@
 package com.tsdc.vinilos.data.remote.network
 import com.tsdc.vinilos.data.mappers.toDomain
 import com.tsdc.vinilos.domain.models.Album
+import com.tsdc.vinilos.domain.models.Artist
 
 class ServiceAdapter(private val apiService: VinilosApiService) {
     suspend fun fetchAlbums(): List<Album> = 
@@ -9,4 +10,7 @@ class ServiceAdapter(private val apiService: VinilosApiService) {
     suspend fun getAlbumById(albumId: Int): Album {
         return apiService.getAlbumById(albumId)
     }
+
+    suspend fun fetchArtists(): List<Artist> =
+        apiService.getArtists().map { it.toDomain() }
 }
