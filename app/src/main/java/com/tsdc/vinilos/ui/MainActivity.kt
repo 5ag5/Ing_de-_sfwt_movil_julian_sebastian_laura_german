@@ -15,6 +15,7 @@ import com.tsdc.vinilos.ui.screens.HomeScreen
 import com.tsdc.vinilos.ui.shared.theme.VinilosTheme
 import com.tsdc.vinilos.ui.viewmodels.AlbumDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
+import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
@@ -33,13 +34,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             VinilosTheme {
                 val viewModel = AlbumViewModel(AppModule.getAlbumsUseCase)
+                val artistViewModel = ArtistViewModel(AppModule.getArtistsUseCase)
                 val detailViewModel = AlbumDetailViewModel(AppModule.getAlbumByIdUseCase)
                 val navController = rememberNavController()
 
                 NavHost(navController = navController, startDestination = "home") {
                     composable("home") {
                         HomeScreen(
-                            viewModel = viewModel,
+                            albumViewModel = viewModel,
+                            artistViewModel = artistViewModel,
                             onAlbumClick = { albumId ->
                                 navController.navigate("album_detail/$albumId")
                             }
@@ -47,7 +50,8 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("home_albums") {
                         HomeScreen(
-                            viewModel = viewModel,
+                            albumViewModel = viewModel,
+                            artistViewModel = artistViewModel,
                             initialTab = 1,
                             onAlbumClick = { albumId ->
                                 navController.navigate("album_detail/$albumId")
