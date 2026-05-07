@@ -16,6 +16,7 @@ import com.tsdc.vinilos.ui.shared.theme.VinilosTheme
 import com.tsdc.vinilos.ui.viewmodels.AlbumDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
 import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
+import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
@@ -35,6 +36,7 @@ class MainActivity : ComponentActivity() {
             VinilosTheme {
                 val viewModel = AlbumViewModel(AppModule.getAlbumsUseCase)
                 val artistViewModel = ArtistViewModel(AppModule.getArtistsUseCase)
+                val collectorViewModel = CollectorViewModel(AppModule.getCollectorsUseCase)
                 val detailViewModel = AlbumDetailViewModel(AppModule.getAlbumByIdUseCase)
                 val navController = rememberNavController()
 
@@ -43,6 +45,7 @@ class MainActivity : ComponentActivity() {
                         HomeScreen(
                             albumViewModel = viewModel,
                             artistViewModel = artistViewModel,
+                            collectorViewModel = collectorViewModel,
                             onAlbumClick = { albumId ->
                                 navController.navigate("album_detail/$albumId")
                             }
@@ -52,6 +55,7 @@ class MainActivity : ComponentActivity() {
                         HomeScreen(
                             albumViewModel = viewModel,
                             artistViewModel = artistViewModel,
+                            collectorViewModel = collectorViewModel,
                             initialTab = 1,
                             onAlbumClick = { albumId ->
                                 navController.navigate("album_detail/$albumId")

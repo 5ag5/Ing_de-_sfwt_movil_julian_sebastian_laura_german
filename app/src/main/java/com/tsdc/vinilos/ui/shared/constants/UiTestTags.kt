@@ -7,4 +7,5 @@ object UiTestTags {
     const val ALBUM_LIST_ITEM = "album_list_item"
     const val ALBUM_DETAIL_ROOT = "album_detail_root"
     const val ARTIST_LIST_ITEM = "artist_list_item"
+    const val COLLECTOR_LIST_ITEM = "collector_list_item"
 }
