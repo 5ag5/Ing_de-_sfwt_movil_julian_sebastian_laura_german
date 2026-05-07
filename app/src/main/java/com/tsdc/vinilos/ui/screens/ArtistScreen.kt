@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tsdc.vinilos.di.AppModule
 import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
+import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -62,6 +63,7 @@ fun ArtistScreenPreview() {
     HomeScreen(
         albumViewModel = com.tsdc.vinilos.ui.viewmodels.AlbumViewModel(AppModule.getAlbumsUseCase),
         artistViewModel = ArtistViewModel(AppModule.getArtistsUseCase),
+        collectorViewModel = CollectorViewModel(AppModule.getCollectorsUseCase),
         initialTab = 2,
         onAlbumClick = {}
     )
