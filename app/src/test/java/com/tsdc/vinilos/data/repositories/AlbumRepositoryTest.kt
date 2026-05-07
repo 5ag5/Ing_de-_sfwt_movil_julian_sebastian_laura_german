@@ -2,6 +2,7 @@ package com.tsdc.vinilos.data.repositories
 
 import com.tsdc.vinilos.data.remote.dto.AlbumDto
 import com.tsdc.vinilos.data.remote.dto.ArtistDto
+import com.tsdc.vinilos.data.remote.dto.CollectorDto
 import com.tsdc.vinilos.data.remote.network.ServiceAdapter
 import com.tsdc.vinilos.data.remote.network.VinilosApiService
 import com.tsdc.vinilos.domain.models.Album
@@ -49,4 +50,6 @@ private class FakeVinilosApiService(
     }
 
     override suspend fun getArtists(): List<ArtistDto> = emptyList()
+
+    override suspend fun getCollectors(): List<CollectorDto> = emptyList()
 }

@@ -4,11 +4,14 @@ import com.tsdc.vinilos.data.remote.network.ServiceAdapter
 import com.tsdc.vinilos.data.remote.network.VinilosApiService
 import com.tsdc.vinilos.data.repositories.ArtistRepository as ArtistRepositoryImpl
 import com.tsdc.vinilos.data.repositories.AlbumRepository as AlbumRepositoryImpl
+import com.tsdc.vinilos.data.repositories.CollectorRepository as CollectorRepositoryImpl
 import com.tsdc.vinilos.domain.repositories.AlbumRepository
 import com.tsdc.vinilos.domain.repositories.ArtistRepository
+import com.tsdc.vinilos.domain.repositories.CollectorRepository
 import com.tsdc.vinilos.domain.usecases.GetAlbumByIdUseCase
 import com.tsdc.vinilos.domain.usecases.GetAlbumsUseCase
 import com.tsdc.vinilos.domain.usecases.GetArtistsUseCase
+import com.tsdc.vinilos.domain.usecases.GetCollectorsUseCase
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -49,5 +52,13 @@ object AppModule {
 
     val getArtistsUseCase: GetArtistsUseCase by lazy {
         GetArtistsUseCase(artistRepository)
+    }
+
+    val collectorRepository: CollectorRepository by lazy {
+        CollectorRepositoryImpl(serviceAdapter)
+    }
+
+    val getCollectorsUseCase: GetCollectorsUseCase by lazy {
+        GetCollectorsUseCase(collectorRepository)
     }
 }
