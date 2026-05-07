@@ -19,8 +19,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
@@ -28,6 +32,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -40,72 +45,85 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
 import com.tsdc.vinilos.di.AppModule
-import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
 import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
 import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun AlbumScreenPreview() {
+fun ArtistScreenPreview() {
     HomeScreen(
-        albumViewModel = AlbumViewModel(AppModule.getAlbumsUseCase),
+        albumViewModel = com.tsdc.vinilos.ui.viewmodels.AlbumViewModel(AppModule.getAlbumsUseCase),
         artistViewModel = ArtistViewModel(AppModule.getArtistsUseCase),
         collectorViewModel = CollectorViewModel(AppModule.getCollectorsUseCase),
-        initialTab = 1,
+        initialTab = 2,
         onAlbumClick = {}
     )
 }
 
 @Composable
-fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
-    val albums by viewModel.albums.collectAsState()
+fun ArtistScreen(viewModel: ArtistViewModel) {
+    val artists by viewModel.artists.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        viewModel.loadAlbums()
+        viewModel.loadArtists()
     }
 
-    val filteredAlbums = remember(albums, searchQuery) {
-        if (searchQuery.isBlank()) albums
-        else albums.filter {
-            it.name.contains(searchQuery, ignoreCase = true) ||
-                    it.genre.contains(searchQuery, ignoreCase = true)
+    val filteredArtists = remember(artists, searchQuery) {
+        if (searchQuery.isBlank()) {
+            artists
+        } else {
+            artists.filter { artist ->
+                artist.name.contains(searchQuery, ignoreCase = true) ||
+                    artist.description.contains(searchQuery, ignoreCase = true)
+            }
         }
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF2F2F6))
+            .background(Color.White)
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFF2B35BD))
-                .padding(horizontal = 20.dp, vertical = 24.dp)
+                .padding(horizontal = 8.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = { }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color(0xFF2B35BD)
+                    )
+                }
                 Text(
-                    text = "Vinilos",
-                    color = Color.White,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.ExtraBold
+                    text = "Artists",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF191B24)
                 )
-                Text(
-                    text = "The Analog Curator",
-                    color = Color.White.copy(alpha = 0.7f),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal
+            }
+
+            IconButton(onClick = { }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "Menu",
+                    tint = Color(0xFF191B24)
                 )
             }
         }
@@ -114,44 +132,65 @@ fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
             value = searchQuery,
             onValueChange = { searchQuery = it },
             modifier = Modifier
-                .testTag("album_search_field")
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 20.dp, vertical = 10.dp),
             placeholder = {
-                Text("Buscar álbumes...", color = Color(0xFF888888), fontSize = 15.sp)
+                Text("Search artists...", color = Color(0xFFA0A7B5), fontSize = 15.sp)
             },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = null,
-                    tint = Color(0xFF888888)
+                    tint = Color(0xFFA0A7B5)
                 )
             },
-            shape = RoundedCornerShape(12.dp),
+            singleLine = true,
+            shape = RoundedCornerShape(14.dp),
             colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color(0xFFE5E5EA),
-                focusedContainerColor = Color(0xFFE5E5EA),
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent
-            ),
-            singleLine = true
+                unfocusedContainerColor = Color(0xFFF0F2F6),
+                focusedContainerColor = Color(0xFFF0F2F6),
+                unfocusedIndicatorColor = Color(0xFFB4BAC7),
+                focusedIndicatorColor = Color(0xFF2B35BD),
+                cursorColor = Color(0xFF2B35BD)
+            )
         )
+
+        Button(
+            onClick = { },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp, vertical = 12.dp)
+                .height(44.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E3FAE)),
+            shape = RoundedCornerShape(24.dp)
+        ) {
+            Text(
+                text = "My favorite Artists",
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            Icon(
+                imageVector = Icons.Default.Favorite,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(18.dp)
+            )
+        }
 
         Text(
-            text = "YOUR LIBRARY",
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
-            color = Color(0xFFF5A623),
-            fontSize = 11.sp,
+            text = "FEATURED ARTISTS",
+            modifier = Modifier.padding(horizontal = 22.dp, vertical = 12.dp),
+            color = Color(0xFFB8BFCC),
+            fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
-            letterSpacing = 1.sp
+            letterSpacing = 1.2.sp
         )
-
-        Spacer(modifier = Modifier.height(4.dp))
 
         when {
             isLoading -> {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(6) { ShimmerAlbumItem() }
+                    items(5) { ShimmerArtistItem() }
                 }
             }
 
@@ -169,7 +208,7 @@ fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "No se pudieron cargar los álbumes",
+                        text = "No se pudieron cargar los artistas",
                         color = Color(0xFF1A1A2E),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold
@@ -178,7 +217,7 @@ fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
                     Text(text = error ?: "", color = Color(0xFF888888), fontSize = 12.sp)
                     Spacer(modifier = Modifier.height(20.dp))
                     Button(
-                        onClick = { viewModel.loadAlbums() },
+                        onClick = { viewModel.loadArtists() },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2B35BD)),
                         shape = RoundedCornerShape(26.dp),
                         modifier = Modifier.height(52.dp)
@@ -188,23 +227,23 @@ fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
                 }
             }
 
-            filteredAlbums.isEmpty() -> {
+            filteredArtists.isEmpty() -> {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = if (searchQuery.isBlank()) "Tu biblioteca está vacía"
-                               else "Sin resultados para \"$searchQuery\"",
+                        text = if (searchQuery.isBlank()) "No hay artistas disponibles"
+                        else "Sin resultados para \"$searchQuery\"",
                         color = Color(0xFF1A1A2E),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = if (searchQuery.isBlank()) "Usa el botón + para agregar un álbum"
-                               else "Intenta con otra búsqueda",
+                        text = if (searchQuery.isBlank()) "Intenta recargar la lista"
+                        else "Prueba con otra busqueda",
                         color = Color(0xFF888888),
                         fontSize = 14.sp
                     )
@@ -212,16 +251,9 @@ fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
             }
 
             else -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .testTag("album_list")
-                ) {
-                    items(filteredAlbums) { album ->
-                        AlbumItem(
-                            album = album,
-                            onClick = { onAlbumClick(album.id) }
-                        )
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(filteredArtists, key = { it.id }) { artist ->
+                        ArtistItem(artist = artist)
                     }
                 }
             }
@@ -230,54 +262,67 @@ fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
 }
 
 @Composable
-private fun ShimmerAlbumItem() {
-    val infiniteTransition = rememberInfiniteTransition(label = "shimmer")
+private fun ShimmerArtistItem() {
+    val infiniteTransition = rememberInfiniteTransition(label = "artist_shimmer")
     val alpha by infiniteTransition.animateFloat(
-        initialValue = 0.2f,
+        initialValue = 0.25f,
         targetValue = 0.7f,
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 800, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "shimmer_alpha"
+        label = "artist_shimmer_alpha"
     )
-    val shimmerColor = Color(0xFFE5E5EA).copy(alpha = alpha)
+    val shimmerColor = Color(0xFFE8EBF2).copy(alpha = alpha)
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF7F7FA)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
-            modifier = Modifier.padding(12.dp).fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(64.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .size(54.dp)
+                    .clip(CircleShape)
                     .background(shimmerColor)
             )
             Column(
-                modifier = Modifier.padding(start = 12.dp).weight(1f)
+                modifier = Modifier
+                    .padding(start = 14.dp)
+                    .weight(1f)
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.7f)
+                        .fillMaxWidth(0.45f)
                         .height(16.dp)
-                        .background(shimmerColor, RoundedCornerShape(4.dp))
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(shimmerColor)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.45f)
+                        .fillMaxWidth(0.65f)
                         .height(12.dp)
-                        .background(shimmerColor, RoundedCornerShape(4.dp))
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(shimmerColor)
                 )
             }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.18f)
+                    .height(12.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(shimmerColor)
+            )
         }
     }
 }

@@ -33,19 +33,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tsdc.vinilos.di.AppModule
 import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
+import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
+import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun HomeScreenPreview() {
     HomeScreen(
-        viewModel = AlbumViewModel(AppModule.getAlbumsUseCase),
+        albumViewModel = AlbumViewModel(AppModule.getAlbumsUseCase),
+        artistViewModel = ArtistViewModel(AppModule.getArtistsUseCase),
+        collectorViewModel = CollectorViewModel(AppModule.getCollectorsUseCase),
         onAlbumClick = {}
     )
 }
 
 @Composable
 fun HomeScreen(
-    viewModel: AlbumViewModel,
+    albumViewModel: AlbumViewModel,
+    artistViewModel: ArtistViewModel,
+    collectorViewModel: CollectorViewModel,
     initialTab: Int = 0,
     onAlbumClick: (Int) -> Unit
 ) {
@@ -112,11 +118,11 @@ fun HomeScreen(
             when (selectedIndex) {
                 0 -> WelcomeScreen()
                 1 -> AlbumScreen(
-                    viewModel = viewModel,
+                    viewModel = albumViewModel,
                     onAlbumClick = onAlbumClick
                 )
-                2 -> PlaceholderScreen("Artists")
-                3 -> PlaceholderScreen("Collectors")
+                2 -> ArtistScreen(viewModel = artistViewModel)
+                3 -> CollectorScreen(viewModel = collectorViewModel)
             }
         }
     }
