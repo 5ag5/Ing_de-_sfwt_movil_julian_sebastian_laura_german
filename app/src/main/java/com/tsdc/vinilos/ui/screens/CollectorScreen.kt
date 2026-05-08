@@ -23,7 +23,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Warning
@@ -52,41 +51,38 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tsdc.vinilos.di.AppModule
-import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
 import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun ArtistScreenPreview() {
+fun CollectorScreenPreview() {
     HomeScreen(
         albumViewModel = com.tsdc.vinilos.ui.viewmodels.AlbumViewModel(AppModule.getAlbumsUseCase),
-        artistViewModel = ArtistViewModel(AppModule.getArtistsUseCase),
+        artistViewModel = com.tsdc.vinilos.ui.viewmodels.ArtistViewModel(AppModule.getArtistsUseCase),
         collectorViewModel = CollectorViewModel(AppModule.getCollectorsUseCase),
-        initialTab = 2,
+        initialTab = 3,
         onAlbumClick = {}
     )
 }
 
 @Composable
-fun ArtistScreen(viewModel: ArtistViewModel) {
-    val artists by viewModel.artists.collectAsState()
+fun CollectorScreen(viewModel: CollectorViewModel) {
+    val collectors by viewModel.collectors.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        viewModel.loadArtists()
+        viewModel.loadCollectors()
     }
 
-    val filteredArtists = remember(artists, searchQuery) {
+    val filteredCollectors = remember(collectors, searchQuery) {
         if (searchQuery.isBlank()) {
-            artists
+            collectors
         } else {
-            artists.filter { artist ->
-                artist.name.contains(searchQuery, ignoreCase = true) ||
-                    artist.description.contains(searchQuery, ignoreCase = true)
+            collectors.filter { collector ->
+                collector.name.contains(searchQuery, ignoreCase = true) ||
+                    collector.email.contains(searchQuery, ignoreCase = true)
             }
         }
     }
@@ -112,7 +108,7 @@ fun ArtistScreen(viewModel: ArtistViewModel) {
                     )
                 }
                 Text(
-                    text = "Artists",
+                    text = "Collectors",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF191B24)
@@ -135,7 +131,7 @@ fun ArtistScreen(viewModel: ArtistViewModel) {
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 10.dp),
             placeholder = {
-                Text("Search artists...", color = Color(0xFFA0A7B5), fontSize = 15.sp)
+                Text("Search collectors...", color = Color(0xFFA0A7B5), fontSize = 15.sp)
             },
             leadingIcon = {
                 Icon(
@@ -155,42 +151,30 @@ fun ArtistScreen(viewModel: ArtistViewModel) {
             )
         )
 
-        Button(
-            onClick = { },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 18.dp, vertical = 12.dp)
-                .height(44.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E3FAE)),
-            shape = RoundedCornerShape(24.dp)
-        ) {
-            Text(
-                text = "My favorite Artists",
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.size(8.dp))
-            Icon(
-                imageVector = Icons.Default.Favorite,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(18.dp)
-            )
-        }
+        Text(
+            text = "COMMUNITY",
+            modifier = Modifier.padding(horizontal = 22.dp, vertical = 16.dp),
+            color = Color(0xFF2B35BD),
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 1.5.sp
+        )
 
         Text(
-            text = "FEATURED ARTISTS",
-            modifier = Modifier.padding(horizontal = 22.dp, vertical = 12.dp),
+            text = "CURATORS & ENTHUSIASTS",
+            modifier = Modifier.padding(horizontal = 22.dp, vertical = 0.dp),
             color = Color(0xFFB8BFCC),
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 1.2.sp
+            fontSize = 11.sp,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 1.sp
         )
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         when {
             isLoading -> {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(5) { ShimmerArtistItem() }
+                    items(4) { ShimmerCollectorItem() }
                 }
             }
 
@@ -208,7 +192,7 @@ fun ArtistScreen(viewModel: ArtistViewModel) {
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "No se pudieron cargar los artistas",
+                        text = "No se pudieron cargar los coleccionistas",
                         color = Color(0xFF1A1A2E),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold
@@ -217,7 +201,7 @@ fun ArtistScreen(viewModel: ArtistViewModel) {
                     Text(text = error ?: "", color = Color(0xFF888888), fontSize = 12.sp)
                     Spacer(modifier = Modifier.height(20.dp))
                     Button(
-                        onClick = { viewModel.loadArtists() },
+                        onClick = { viewModel.loadCollectors() },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2B35BD)),
                         shape = RoundedCornerShape(26.dp),
                         modifier = Modifier.height(52.dp)
@@ -227,14 +211,14 @@ fun ArtistScreen(viewModel: ArtistViewModel) {
                 }
             }
 
-            filteredArtists.isEmpty() -> {
+            filteredCollectors.isEmpty() -> {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = if (searchQuery.isBlank()) "No hay artistas disponibles"
+                        text = if (searchQuery.isBlank()) "No hay coleccionistas disponibles"
                         else "Sin resultados para \"$searchQuery\"",
                         color = Color(0xFF1A1A2E),
                         fontSize = 18.sp,
@@ -252,8 +236,8 @@ fun ArtistScreen(viewModel: ArtistViewModel) {
 
             else -> {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(filteredArtists, key = { it.id }) { artist ->
-                        ArtistItem(artist = artist)
+                    items(filteredCollectors, key = { it.id }) { collector ->
+                        CollectorItem(collector = collector, albumCount = (50..350).random())
                     }
                 }
             }
@@ -262,8 +246,8 @@ fun ArtistScreen(viewModel: ArtistViewModel) {
 }
 
 @Composable
-private fun ShimmerArtistItem() {
-    val infiniteTransition = rememberInfiniteTransition(label = "artist_shimmer")
+private fun ShimmerCollectorItem() {
+    val infiniteTransition = rememberInfiniteTransition(label = "collector_shimmer")
     val alpha by infiniteTransition.animateFloat(
         initialValue = 0.25f,
         targetValue = 0.7f,
@@ -271,55 +255,58 @@ private fun ShimmerArtistItem() {
             animation = tween(durationMillis = 800, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
-        label = "artist_shimmer_alpha"
+        label = "collector_shimmer_alpha"
     )
-    val shimmerColor = Color(0xFFE8EBF2).copy(alpha = alpha)
+    val shimmerColor = Color(0xFFE5E5EA).copy(alpha = alpha)
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF7F7FA)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Box(
-                modifier = Modifier
-                    .size(54.dp)
-                    .clip(CircleShape)
-                    .background(shimmerColor)
-            )
-            Column(
-                modifier = Modifier
-                    .padding(start = 14.dp)
-                    .weight(1f)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.45f)
-                        .height(16.dp)
-                        .clip(RoundedCornerShape(4.dp))
+                        .size(56.dp)
+                        .clip(CircleShape)
                         .background(shimmerColor)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.65f)
-                        .height(12.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(shimmerColor)
-                )
+                Column(
+                    modifier = Modifier.padding(start = 16.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.45f)
+                            .height(16.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(shimmerColor)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.35f)
+                            .height(12.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(shimmerColor)
+                    )
+                }
             }
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(0.18f)
-                    .height(12.dp)
+                    .size(30.dp)
                     .clip(RoundedCornerShape(4.dp))
                     .background(shimmerColor)
             )
