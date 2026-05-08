@@ -85,8 +85,15 @@ fun HomeScreen(
         bottomBar = {
             NavigationBar(containerColor = Color.White) {
                 navLabels.forEachIndexed { index, label ->
+                    val navModifier = when (index) {
+                        0 -> Modifier.testTag("nav_home")
+                        1 -> Modifier.testTag("nav_albums")
+                        2 -> Modifier.testTag("nav_artists")
+                        3 -> Modifier.testTag("nav_collectors")
+                        else -> Modifier
+                    }
                     NavigationBarItem(
-                        modifier = if (index == 1) Modifier.testTag("nav_albums") else Modifier,
+                        modifier = navModifier,
                         selected = selectedIndex == index,
                         onClick = { selectedIndex = index },
                         icon = {
