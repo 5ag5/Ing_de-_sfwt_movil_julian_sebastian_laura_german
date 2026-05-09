@@ -50,6 +50,10 @@ private class FakeVinilosApiServiceForCollectors(
 
     override suspend fun getArtists(): List<ArtistDto> = emptyList()
 
+    override suspend fun getArtistById(artistId: Int): ArtistDto {
+        error("no usado en test de coleccionistas")
+    }
+
     override suspend fun getCollectors(): List<CollectorDto> {
         wasGetCollectorsCalled = true
         return collectorsToReturn

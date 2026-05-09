@@ -15,6 +15,9 @@ class ServiceAdapter(private val apiService: VinilosApiService) {
     suspend fun fetchArtists(): List<Artist> =
         apiService.getArtists().map { it.toDomain() }
 
+    suspend fun fetchArtistById(artistId: Int): Artist =
+        apiService.getArtistById(artistId).toDomain()
+
     suspend fun fetchCollectors(): List<Collector> =
         apiService.getCollectors().map { it.toDomain() }
 }
