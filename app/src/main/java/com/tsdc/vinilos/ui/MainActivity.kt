@@ -11,10 +11,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tsdc.vinilos.di.AppModule
 import com.tsdc.vinilos.ui.screens.AlbumDetailScreen
+import com.tsdc.vinilos.ui.screens.ArtistDetailScreen
 import com.tsdc.vinilos.ui.screens.HomeScreen
 import com.tsdc.vinilos.ui.shared.theme.VinilosTheme
 import com.tsdc.vinilos.ui.viewmodels.AlbumDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
+import com.tsdc.vinilos.ui.viewmodels.ArtistDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
 import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
 import androidx.lifecycle.lifecycleScope
@@ -39,6 +41,11 @@ class MainActivity : ComponentActivity() {
                 val artistViewModel = ArtistViewModel(AppModule.getArtistsUseCase)
                 val collectorViewModel = CollectorViewModel(AppModule.getCollectorsUseCase)
                 val detailViewModel = AlbumDetailViewModel(AppModule.getAlbumByIdUseCase)
+                val artistDetailViewModel = ArtistDetailViewModel(
+                    AppModule.getArtistByIdUseCase,
+                    AppModule.toggleFavoriteArtistUseCase,
+                    AppModule.isFavoriteArtistUseCase
+                )
                 val navController = rememberNavController()
 
                 NavHost(navController = navController, startDestination = "home") {
@@ -49,6 +56,9 @@ class MainActivity : ComponentActivity() {
                             collectorViewModel = collectorViewModel,
                             onAlbumClick = { albumId ->
                                 navController.navigate("album_detail/$albumId")
+                            },
+                            onArtistClick = { artistId ->
+                                navController.navigate("artist_detail/$artistId")
                             }
                         )
                     }
@@ -60,6 +70,23 @@ class MainActivity : ComponentActivity() {
                             initialTab = 1,
                             onAlbumClick = { albumId ->
                                 navController.navigate("album_detail/$albumId")
+                            },
+                            onArtistClick = { artistId ->
+                                navController.navigate("artist_detail/$artistId")
+                            }
+                        )
+                    }
+                    composable("home_artists") {
+                        HomeScreen(
+                            albumViewModel = viewModel,
+                            artistViewModel = artistViewModel,
+                            collectorViewModel = collectorViewModel,
+                            initialTab = 2,
+                            onAlbumClick = { albumId ->
+                                navController.navigate("album_detail/$albumId")
+                            },
+                            onArtistClick = { artistId ->
+                                navController.navigate("artist_detail/$artistId")
                             }
                         )
                     }
@@ -73,6 +100,21 @@ class MainActivity : ComponentActivity() {
                             albumId = albumId,
                             onBack = {
                                 navController.navigate("home_albums") {
+                                    popUpTo("home") { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+                    composable(
+                        route = "artist_detail/{artistId}",
+                        arguments = listOf(navArgument("artistId") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val artistId = backStackEntry.arguments?.getInt("artistId") ?: -1
+                        ArtistDetailScreen(
+                            viewModel = artistDetailViewModel,
+                            artistId = artistId,
+                            onBack = {
+                                navController.navigate("home_artists") {
                                     popUpTo("home") { inclusive = true }
                                 }
                             }

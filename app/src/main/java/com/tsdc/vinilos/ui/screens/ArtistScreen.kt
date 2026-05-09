@@ -65,12 +65,13 @@ fun ArtistScreenPreview() {
         artistViewModel = ArtistViewModel(AppModule.getArtistsUseCase),
         collectorViewModel = CollectorViewModel(AppModule.getCollectorsUseCase),
         initialTab = 2,
-        onAlbumClick = {}
+        onAlbumClick = {},
+        onArtistClick = {}
     )
 }
 
 @Composable
-fun ArtistScreen(viewModel: ArtistViewModel) {
+fun ArtistScreen(viewModel: ArtistViewModel, onArtistClick: (Int) -> Unit = {}) {
     val artists by viewModel.artists.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
@@ -254,7 +255,7 @@ fun ArtistScreen(viewModel: ArtistViewModel) {
             else -> {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(filteredArtists, key = { it.id }) { artist ->
-                        ArtistItem(artist = artist)
+                        ArtistItem(artist = artist, onClick = { onArtistClick(artist.id) })
                     }
                 }
             }
