@@ -43,7 +43,8 @@ fun HomeScreenPreview() {
         albumViewModel = AlbumViewModel(AppModule.getAlbumsUseCase),
         artistViewModel = ArtistViewModel(AppModule.getArtistsUseCase),
         collectorViewModel = CollectorViewModel(AppModule.getCollectorsUseCase),
-        onAlbumClick = {}
+        onAlbumClick = {},
+        onArtistClick = {}
     )
 }
 
@@ -53,7 +54,8 @@ fun HomeScreen(
     artistViewModel: ArtistViewModel,
     collectorViewModel: CollectorViewModel,
     initialTab: Int = 0,
-    onAlbumClick: (Int) -> Unit
+    onAlbumClick: (Int) -> Unit,
+    onArtistClick: (Int) -> Unit = {}
 ) {
     var selectedIndex by remember { mutableIntStateOf(initialTab) }
 
@@ -128,7 +130,10 @@ fun HomeScreen(
                     viewModel = albumViewModel,
                     onAlbumClick = onAlbumClick
                 )
-                2 -> ArtistScreen(viewModel = artistViewModel)
+                2 -> ArtistScreen(
+                    viewModel = artistViewModel,
+                    onArtistClick = onArtistClick
+                )
                 3 -> CollectorScreen(viewModel = collectorViewModel)
             }
         }

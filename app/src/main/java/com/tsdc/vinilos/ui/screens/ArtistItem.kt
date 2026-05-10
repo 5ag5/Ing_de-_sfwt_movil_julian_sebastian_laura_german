@@ -1,5 +1,6 @@
 package com.tsdc.vinilos.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,17 +38,19 @@ fun ArtistItemPreview() {
             image = "",
             description = "Jazz trumpeter and composer.",
             birthDate = Date()
-        )
+        ),
+        onClick = {}
     )
 }
 
 @Composable
-fun ArtistItem(artist: Artist) {
+fun ArtistItem(artist: Artist, onClick: () -> Unit = {}) {
     Card(
         modifier = Modifier
             .testTag(UiTestTags.ARTIST_LIST_ITEM)
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable { onClick() },
         shape = androidx.compose.foundation.shape.RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF7F7FA)),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
