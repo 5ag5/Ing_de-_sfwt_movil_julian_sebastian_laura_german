@@ -38,5 +38,21 @@ class FakeArtistRepository(
     private val artists: List<Artist> = sampleArtists
 ) : ArtistRepository {
 
+    private val favorites = mutableSetOf<Int>()
+
     override suspend fun getArtists(): List<Artist> = artists
+
+    override suspend fun getArtistById(id: Int): Artist =
+        artists.first { it.id == id }
+
+    override suspend fun isFavorite(artistId: Int): Boolean =
+        favorites.contains(artistId)
+
+    override suspend fun toggleFavorite(artistId: Int) {
+        if (favorites.contains(artistId)) {
+            favorites.remove(artistId)
+        } else {
+            favorites.add(artistId)
+        }
+    }
 }
