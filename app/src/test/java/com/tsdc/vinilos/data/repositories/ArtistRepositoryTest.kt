@@ -1,5 +1,6 @@
 package com.tsdc.vinilos.data.repositories
 
+import com.tsdc.vinilos.data.local.dao.ArtistDao
 import com.tsdc.vinilos.data.local.dao.FavoriteArtistDao
 import com.tsdc.vinilos.data.local.entities.FavoriteArtistEntity
 import com.tsdc.vinilos.data.remote.dto.AlbumDto
@@ -9,6 +10,7 @@ import com.tsdc.vinilos.data.remote.network.ServiceAdapter
 import com.tsdc.vinilos.data.remote.network.VinilosApiService
 import com.tsdc.vinilos.domain.models.Album
 import com.tsdc.vinilos.domain.models.Artist
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -30,10 +32,13 @@ class ArtistRepositoryTest {
         Artist(202, "Otros", "", "Desc", birth)
     )
 
+    private val artistDaoMock: ArtistDao = mockk(relaxed = true)
+
     @Test
     fun getArtists_returnsMappedListFromApi() = runBlocking {
         val fakeApi = FakeVinilosApiServiceForArtists(sampleDtos)
-        val repository = ArtistRepository(ServiceAdapter(fakeApi), FakeFavoriteArtistDao())
+        val repository =
+            ArtistRepository(ServiceAdapter(fakeApi), FakeFavoriteArtistDao(), artistDaoMock)
 
         val result = repository.getArtists()
 
@@ -44,7 +49,8 @@ class ArtistRepositoryTest {
     @Test
     fun getArtistById_returnsMappedArtistFromApi() = runBlocking {
         val fakeApi = FakeVinilosApiServiceForArtists(sampleDtos)
-        val repository = ArtistRepository(ServiceAdapter(fakeApi), FakeFavoriteArtistDao())
+        val repository =
+            ArtistRepository(ServiceAdapter(fakeApi), FakeFavoriteArtistDao(), artistDaoMock)
 
         val result = repository.getArtistById(201)
 
@@ -53,7 +59,8 @@ class ArtistRepositoryTest {
 
     @Test
     fun toggleFavorite_addsThenRemovesFavorite() = runBlocking {
-        val repository = ArtistRepository(ServiceAdapter(FakeVinilosApiServiceForArtists(sampleDtos)), FakeFavoriteArtistDao())
+        val repository =
+            ArtistRepository(ServiceAdapter(FakeVinilosApiServiceForArtists(sampleDtos)), FakeFavoriteArtistDao(), artistDaoMock)
 
         assertFalse(repository.isFavorite(201))
         repository.toggleFavorite(201)

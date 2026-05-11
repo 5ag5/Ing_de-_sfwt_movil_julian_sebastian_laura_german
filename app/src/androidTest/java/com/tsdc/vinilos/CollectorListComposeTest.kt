@@ -1,7 +1,6 @@
 package com.tsdc.vinilos
 
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.remember
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -33,15 +32,10 @@ class CollectorListComposeTest {
     private fun launchHomeWithFakes() {
         composeRule.setContent {
             VinilosTheme {
-                val albumViewModel = remember {
-                    AlbumViewModel(GetAlbumsUseCase(FakeAlbumRepository()))
-                }
-                val artistViewModel = remember {
-                    ArtistViewModel(GetArtistsUseCase(FakeArtistRepository()))
-                }
-                val collectorViewModel = remember {
+                val albumViewModel = AlbumViewModel(GetAlbumsUseCase(FakeAlbumRepository()))
+                val artistViewModel = ArtistViewModel(GetArtistsUseCase(FakeArtistRepository()))
+                val collectorViewModel =
                     CollectorViewModel(GetCollectorsUseCase(FakeCollectorRepository()))
-                }
                 HomeScreen(
                     albumViewModel = albumViewModel,
                     artistViewModel = artistViewModel,

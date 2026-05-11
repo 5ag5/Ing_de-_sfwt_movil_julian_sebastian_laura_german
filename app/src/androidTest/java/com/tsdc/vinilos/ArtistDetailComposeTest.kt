@@ -1,7 +1,6 @@
 package com.tsdc.vinilos
 
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.remember
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
@@ -34,14 +33,12 @@ class ArtistDetailComposeTest {
         backCalls = 0
         composeRule.setContent {
             VinilosTheme {
-                val repository = remember { FakeArtistRepository() }
-                val viewModel = remember {
-                    ArtistDetailViewModel(
-                        GetArtistByIdUseCase(repository),
-                        ToggleFavoriteArtistUseCase(repository),
-                        IsFavoriteArtistUseCase(repository)
-                    )
-                }
+                val repository = FakeArtistRepository()
+                val viewModel = ArtistDetailViewModel(
+                    GetArtistByIdUseCase(repository),
+                    ToggleFavoriteArtistUseCase(repository),
+                    IsFavoriteArtistUseCase(repository)
+                )
                 ArtistDetailScreen(
                     viewModel = viewModel,
                     artistId = artistId,
