@@ -97,6 +97,7 @@ dependencies {
 
     // Unit testing (JVM)
     testImplementation("junit:junit:4.13.2")
+    testImplementation("io.mockk:mockk:1.13.10")
 
     // Android instrumented testing (Espresso 3.7+ needed for API 35+ / Android 16: InputManager no longer has getInstance)
     androidTestImplementation("androidx.test.ext:junit:1.3.0")

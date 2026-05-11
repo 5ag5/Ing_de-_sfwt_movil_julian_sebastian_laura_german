@@ -1,5 +1,6 @@
 package com.tsdc.vinilos.data.repositories
 
+import com.tsdc.vinilos.data.local.dao.CollectorDao
 import com.tsdc.vinilos.data.remote.dto.AlbumDto
 import com.tsdc.vinilos.data.remote.dto.ArtistDto
 import com.tsdc.vinilos.data.remote.dto.CollectorDto
@@ -7,6 +8,7 @@ import com.tsdc.vinilos.data.remote.network.ServiceAdapter
 import com.tsdc.vinilos.data.remote.network.VinilosApiService
 import com.tsdc.vinilos.domain.models.Album
 import com.tsdc.vinilos.domain.models.Collector
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -26,7 +28,8 @@ class CollectorRepositoryTest {
         )
 
         val fakeApi = FakeVinilosApiServiceForCollectors(dtos)
-        val repository = CollectorRepository(ServiceAdapter(fakeApi))
+        val collectorDao = mockk<CollectorDao>(relaxed = true)
+        val repository = CollectorRepository(ServiceAdapter(fakeApi), collectorDao)
 
         val result = repository.getCollectors()
 

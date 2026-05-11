@@ -50,7 +50,7 @@ object AppModule {
     }
 
     val albumRepository: AlbumRepository by lazy {
-        AlbumRepositoryImpl(serviceAdapter)
+        AlbumRepositoryImpl(serviceAdapter, database.albumDao())
     }
 
     val getAlbumsUseCase: GetAlbumsUseCase by lazy {
@@ -62,7 +62,7 @@ object AppModule {
     }
 
     val artistRepository: ArtistRepository by lazy {
-        ArtistRepositoryImpl(serviceAdapter, database.favoriteArtistDao())
+        ArtistRepositoryImpl(serviceAdapter, database.favoriteArtistDao(), database.artistDao())
     }
 
     val getArtistsUseCase: GetArtistsUseCase by lazy {
@@ -82,7 +82,7 @@ object AppModule {
     }
 
     val collectorRepository: CollectorRepository by lazy {
-        CollectorRepositoryImpl(serviceAdapter)
+        CollectorRepositoryImpl(serviceAdapter, database.collectorDao())
     }
 
     val getCollectorsUseCase: GetCollectorsUseCase by lazy {
