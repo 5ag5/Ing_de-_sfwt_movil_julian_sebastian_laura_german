@@ -124,9 +124,6 @@ sonarqube {
         property("sonar.exclusions", "**/R.class,**/BuildConfig.class,**/generated/**")
         property("sonar.test.exclusions", "**/test/**/*Test.class")
         
-        // Coverage (si tienes Jacoco)
-        property("sonar.java.coveragePlugin", "jacoco")
-        
         // Kotlin
         property("sonar.kotlin.ktlint.reportPaths", "build/reports/ktlint/ktlint-result.xml")
         
