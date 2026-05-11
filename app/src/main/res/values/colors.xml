@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Material Design Colors -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -7,4 +8,15 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- App Brand Colors -->
+    <color name="primary_blue">#FF2B35BD</color>
+    <color name="light_blue">#FFE8EAFF</color>
+    <color name="dark_gray">#FF1A1A2E</color>
+    <color name="medium_gray">#FF191B24</color>
+    <color name="light_gray">#FFA0A7B5</color>
+    <color name="border_gray">#FFE1E4F2</color>
+    <color name="text_light">#FF4D4D4D</color>
+    <color name="error_red">#FFB00020</color>
+    <color name="light_bg">#FFF2F2F6</color>
 </resources>

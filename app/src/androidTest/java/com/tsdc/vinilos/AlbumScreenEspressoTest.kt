@@ -1,7 +1,6 @@
 package com.tsdc.vinilos
 
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.remember
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -14,9 +13,13 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextReplacement
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.tsdc.vinilos.domain.usecases.GetAlbumsUseCase
+import com.tsdc.vinilos.domain.usecases.GetArtistsUseCase
+import com.tsdc.vinilos.domain.usecases.GetCollectorsUseCase
 import com.tsdc.vinilos.ui.screens.HomeScreen
 import com.tsdc.vinilos.ui.shared.theme.VinilosTheme
 import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
+import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
+import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,13 +33,16 @@ class AlbumScreenEspressoTest {
     private fun launchHomeWithFakeCatalog() {
         composeRule.setContent {
             VinilosTheme {
-                val viewModel = remember {
-                    AlbumViewModel(GetAlbumsUseCase(FakeAlbumRepository()))
-                }
+                val albumViewModel = AlbumViewModel(GetAlbumsUseCase(FakeAlbumRepository()))
+                val artistViewModel = ArtistViewModel(GetArtistsUseCase(FakeArtistRepository()))
+                val collectorViewModel =
+                    CollectorViewModel(GetCollectorsUseCase(FakeCollectorRepository()))
                 HomeScreen(
-                    viewModel = viewModel,
+                    albumViewModel = albumViewModel,
+                    artistViewModel = artistViewModel,
+                    collectorViewModel = collectorViewModel,
                     initialTab = 0,
-                    onAlbumClick = {}
+                    onAlbumClick = { /* Navigate to detail */ }
                 )
             }
         }

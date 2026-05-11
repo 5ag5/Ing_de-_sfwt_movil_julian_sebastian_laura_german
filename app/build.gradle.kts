@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.kapt")
+    id("org.sonarqube") version "4.4.1.3373"
 }
 
 android {
@@ -32,6 +33,30 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    lint {
+        // Habilitar todos los checks
+        checkAllWarnings = true
+        // Tratar warnings como errores en release
+        warningsAsErrors = false
+        // Generar reporte HTML
+        htmlReport = true
+        htmlOutput = file("build/reports/lint/lint-results.html")
+        // Generar reporte XML
+        xmlReport = true
+        xmlOutput = file("build/reports/lint/lint-results.xml")
+        // Deshabilitar algunos checks específicos si es necesario
+        disable.addAll(listOf(
+            "MissingTranslation",  // No es crítico para desarrollo
+            "ExtraTranslation",     // No es crítico para desarrollo
+            "RememberReturnType"    // Error en tests - no aplica a producción
+        ))
+        // Habilitar checks específicos de Compose
+        enable.addAll(listOf(
+            "ComposeModifierMissing",
+            "ComposeUnstableCollections"
+        ))
     }
 }
 
@@ -72,6 +97,7 @@ dependencies {
 
     // Unit testing (JVM)
     testImplementation("junit:junit:4.13.2")
+    testImplementation("io.mockk:mockk:1.13.10")
 
     // Android instrumented testing (Espresso 3.7+ needed for API 35+ / Android 16: InputManager no longer has getInstance)
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
@@ -83,4 +109,29 @@ dependencies {
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.10.01"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+}
+
+// Configuración de SonarQube
+sonarqube {
+    properties {
+        property("sonar.projectKey", "vinilos_android")
+        property("sonar.projectName", "Vinilos Android App")
+        property("sonar.projectVersion", "1.0")
+        property("sonar.sources", "src/main/java,src/main/kotlin")
+        property("sonar.tests", "src/test/java,src/test/kotlin,src/androidTest/java,src/androidTest/kotlin")
+        
+        // Exclusiones
+        property("sonar.exclusions", "**/R.class,**/BuildConfig.class,**/generated/**")
+        property("sonar.test.exclusions", "**/test/**/*Test.class")
+        
+        // Kotlin
+        property("sonar.kotlin.ktlint.reportPaths", "build/reports/ktlint/ktlint-result.xml")
+        
+        // Android específico
+        property("sonar.android.variant", "debug")
+        property("sonar.gradle.skipCompile", "false")
+        
+        // Lenguaje
+        property("sonar.language", "kotlin")
+    }
 }

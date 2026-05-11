@@ -1,9 +1,13 @@
 package com.tsdc.vinilos.data.repositories
 
+import com.tsdc.vinilos.data.local.dao.AlbumDao
 import com.tsdc.vinilos.data.remote.dto.AlbumDto
+import com.tsdc.vinilos.data.remote.dto.ArtistDto
+import com.tsdc.vinilos.data.remote.dto.CollectorDto
 import com.tsdc.vinilos.data.remote.network.ServiceAdapter
 import com.tsdc.vinilos.data.remote.network.VinilosApiService
 import com.tsdc.vinilos.domain.models.Album
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -24,7 +28,8 @@ class AlbumRepositoryTest {
         )
 
         val fakeApiService = FakeVinilosApiService(expectedAlbum)
-        val repository = AlbumRepository(ServiceAdapter(fakeApiService))
+        val albumDao = mockk<AlbumDao>(relaxed = true)
+        val repository = AlbumRepository(ServiceAdapter(fakeApiService), albumDao)
 
         val result = repository.getAlbumById(101)
 
@@ -46,4 +51,12 @@ private class FakeVinilosApiService(
         lastRequestedAlbumId = albumId
         return albumToReturn
     }
+
+    override suspend fun getArtists(): List<ArtistDto> = emptyList()
+
+    override suspend fun getArtistById(artistId: Int): ArtistDto {
+        error("no usado en test de álbumes")
+    }
+
+    override suspend fun getCollectors(): List<CollectorDto> = emptyList()
 }

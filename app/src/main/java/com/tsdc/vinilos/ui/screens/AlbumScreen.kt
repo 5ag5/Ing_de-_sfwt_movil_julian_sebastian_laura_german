@@ -49,12 +49,16 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.tsdc.vinilos.di.AppModule
 import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
+import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
+import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun AlbumScreenPreview() {
     HomeScreen(
-        viewModel = AlbumViewModel(AppModule.getAlbumsUseCase),
+        albumViewModel = AlbumViewModel(AppModule.getAlbumsUseCase),
+        artistViewModel = ArtistViewModel(AppModule.getArtistsUseCase),
+        collectorViewModel = CollectorViewModel(AppModule.getCollectorsUseCase),
         initialTab = 1,
         onAlbumClick = {}
     )

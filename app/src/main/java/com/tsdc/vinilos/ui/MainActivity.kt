@@ -1,7 +1,6 @@
 package com.tsdc.vinilos.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.navigation.NavType
@@ -11,46 +10,72 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tsdc.vinilos.di.AppModule
 import com.tsdc.vinilos.ui.screens.AlbumDetailScreen
+import com.tsdc.vinilos.ui.screens.ArtistDetailScreen
 import com.tsdc.vinilos.ui.screens.HomeScreen
 import com.tsdc.vinilos.ui.shared.theme.VinilosTheme
 import com.tsdc.vinilos.ui.viewmodels.AlbumDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
+import com.tsdc.vinilos.ui.viewmodels.ArtistDetailViewModel
+import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
+import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppModule.init(this)
 
-        lifecycleScope.launch {
-            try {
-                val albums = AppModule.apiService.getAlbums()
-                Log.d("VinilosTest", "Álbumes recibidos: $albums")
-            } catch (e: Exception) {
-                Log.e("VinilosTest", "Error llamando backend", e)
-            }
-        }
         setContent {
             VinilosTheme {
                 val viewModel = AlbumViewModel(AppModule.getAlbumsUseCase)
+                val artistViewModel = ArtistViewModel(AppModule.getArtistsUseCase)
+                val collectorViewModel = CollectorViewModel(AppModule.getCollectorsUseCase)
                 val detailViewModel = AlbumDetailViewModel(AppModule.getAlbumByIdUseCase)
+                val artistDetailViewModel = ArtistDetailViewModel(
+                    AppModule.getArtistByIdUseCase,
+                    AppModule.toggleFavoriteArtistUseCase,
+                    AppModule.isFavoriteArtistUseCase
+                )
                 val navController = rememberNavController()
 
                 NavHost(navController = navController, startDestination = "home") {
                     composable("home") {
                         HomeScreen(
-                            viewModel = viewModel,
+                            albumViewModel = viewModel,
+                            artistViewModel = artistViewModel,
+                            collectorViewModel = collectorViewModel,
                             onAlbumClick = { albumId ->
                                 navController.navigate("album_detail/$albumId")
+                            },
+                            onArtistClick = { artistId ->
+                                navController.navigate("artist_detail/$artistId")
                             }
                         )
                     }
                     composable("home_albums") {
                         HomeScreen(
-                            viewModel = viewModel,
+                            albumViewModel = viewModel,
+                            artistViewModel = artistViewModel,
+                            collectorViewModel = collectorViewModel,
                             initialTab = 1,
                             onAlbumClick = { albumId ->
                                 navController.navigate("album_detail/$albumId")
+                            },
+                            onArtistClick = { artistId ->
+                                navController.navigate("artist_detail/$artistId")
+                            }
+                        )
+                    }
+                    composable("home_artists") {
+                        HomeScreen(
+                            albumViewModel = viewModel,
+                            artistViewModel = artistViewModel,
+                            collectorViewModel = collectorViewModel,
+                            initialTab = 2,
+                            onAlbumClick = { albumId ->
+                                navController.navigate("album_detail/$albumId")
+                            },
+                            onArtistClick = { artistId ->
+                                navController.navigate("artist_detail/$artistId")
                             }
                         )
                     }
@@ -69,9 +94,23 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
+                    composable(
+                        route = "artist_detail/{artistId}",
+                        arguments = listOf(navArgument("artistId") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val artistId = backStackEntry.arguments?.getInt("artistId") ?: -1
+                        ArtistDetailScreen(
+                            viewModel = artistDetailViewModel,
+                            artistId = artistId,
+                            onBack = {
+                                navController.navigate("home_artists") {
+                                    popUpTo("home") { inclusive = true }
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
-
     }
 }
