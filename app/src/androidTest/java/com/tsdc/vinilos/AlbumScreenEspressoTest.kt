@@ -42,7 +42,7 @@ class AlbumScreenEspressoTest {
                     artistViewModel = artistViewModel,
                     collectorViewModel = collectorViewModel,
                     initialTab = 0,
-                    onAlbumClick = {}
+                    onAlbumClick = { /* Navigate to detail */ }
                 )
             }
         }

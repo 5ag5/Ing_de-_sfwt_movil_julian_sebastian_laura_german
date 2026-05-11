@@ -13,4 +13,8 @@ object UiTestTags {
     const val COLLECTOR_LIST_ITEM = "collector_list_item"
     const val ARTIST_SEARCH_FIELD = "artist_search_field"
     const val COLLECTOR_SEARCH_FIELD = "collector_search_field"
+    const val NAV_HOME = "nav_home"
+    const val NAV_ALBUMS = "nav_albums"
+    const val NAV_ARTISTS = "nav_artists"
+    const val NAV_COLLECTORS = "nav_collectors"
 }
