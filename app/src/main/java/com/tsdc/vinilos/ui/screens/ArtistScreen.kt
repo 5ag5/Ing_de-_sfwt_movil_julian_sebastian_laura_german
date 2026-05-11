@@ -105,13 +105,7 @@ fun ArtistScreen(viewModel: ArtistViewModel, onArtistClick: (Int) -> Unit = {}) 
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color(0xFF2B35BD)
-                    )
-                }
+                
                 Text(
                     text = "Artists",
                     fontSize = 18.sp,
@@ -120,13 +114,7 @@ fun ArtistScreen(viewModel: ArtistViewModel, onArtistClick: (Int) -> Unit = {}) 
                 )
             }
 
-            IconButton(onClick = { }) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Menu",
-                    tint = Color(0xFF191B24)
-                )
-            }
+         
         }
 
         TextField(
@@ -158,7 +146,9 @@ fun ArtistScreen(viewModel: ArtistViewModel, onArtistClick: (Int) -> Unit = {}) 
         )
 
         Button(
-            onClick = { },
+            onClick = { 
+                // Favorite artists feature to be implemented
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 18.dp, vertical = 12.dp)
