@@ -93,6 +93,10 @@ private class FakeVinilosApiServiceForArtists(
     }
 
     override suspend fun getCollectors(): List<CollectorDto> = emptyList()
+
+    override suspend fun getCollectorById(collectorId: Int): CollectorDto {
+        error("no usado en test de artistas")
+    }
 }
 
 private class FakeFavoriteArtistDao : FavoriteArtistDao {

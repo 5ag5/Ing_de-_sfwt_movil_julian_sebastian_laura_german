@@ -23,4 +23,7 @@ class FakeCollectorRepository(
 ) : CollectorRepository {
 
     override suspend fun getCollectors(): List<Collector> = collectors
+
+    override suspend fun getCollectorById(id: Int): Collector =
+        collectors.first { it.id == id }
 }

@@ -36,6 +36,25 @@ class CollectorRepositoryTest {
         assertTrue(fakeApi.wasGetCollectorsCalled)
         assertEquals(expected, result)
     }
+
+    @Test
+    fun getCollectorById_returnsMappedCollectorFromApi() = runBlocking {
+        val dtos = listOf(
+            CollectorDto(301, "Ana", "3001112233", "ana@mail.com"),
+            CollectorDto(302, "Luis", "3004445566", "luis@mail.com")
+        )
+        val expected = Collector(301, "Ana", "3001112233", "ana@mail.com")
+
+        val fakeApi = FakeVinilosApiServiceForCollectors(dtos)
+        val collectorDao = mockk<CollectorDao>(relaxed = true)
+        val repository = CollectorRepository(ServiceAdapter(fakeApi), collectorDao)
+
+        val result = repository.getCollectorById(301)
+
+        assertTrue(fakeApi.wasGetCollectorByIdCalled)
+        assertEquals(301, fakeApi.lastRequestedCollectorId)
+        assertEquals(expected, result)
+    }
 }
 
 private class FakeVinilosApiServiceForCollectors(
@@ -43,6 +62,12 @@ private class FakeVinilosApiServiceForCollectors(
 ) : VinilosApiService {
 
     var wasGetCollectorsCalled: Boolean = false
+        private set
+
+    var wasGetCollectorByIdCalled: Boolean = false
+        private set
+
+    var lastRequestedCollectorId: Int? = null
         private set
 
     override suspend fun getAlbums(): List<AlbumDto> = emptyList()
@@ -60,5 +85,11 @@ private class FakeVinilosApiServiceForCollectors(
     override suspend fun getCollectors(): List<CollectorDto> {
         wasGetCollectorsCalled = true
         return collectorsToReturn
+    }
+
+    override suspend fun getCollectorById(collectorId: Int): CollectorDto {
+        wasGetCollectorByIdCalled = true
+        lastRequestedCollectorId = collectorId
+        return collectorsToReturn.first { it.id == collectorId }
     }
 }
