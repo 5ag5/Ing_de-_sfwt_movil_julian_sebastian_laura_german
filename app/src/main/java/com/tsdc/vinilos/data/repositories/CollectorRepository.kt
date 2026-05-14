@@ -22,4 +22,13 @@ class CollectorRepository(
             if (cached.isEmpty()) throw e
             cached
         }
+
+    override suspend fun getCollectorById(id: Int): Collector =
+        try {
+            val remote = serviceAdapter.fetchCollectorById(id)
+            collectorDao.insert(remote.toEntity())
+            remote
+        } catch (e: Exception) {
+            collectorDao.getCollectorById(id)?.toDomain() ?: throw e
+        }
 }

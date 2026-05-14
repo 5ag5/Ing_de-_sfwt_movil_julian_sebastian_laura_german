@@ -14,6 +14,7 @@ import com.tsdc.vinilos.domain.usecases.GetAlbumByIdUseCase
 import com.tsdc.vinilos.domain.usecases.GetAlbumsUseCase
 import com.tsdc.vinilos.domain.usecases.GetArtistByIdUseCase
 import com.tsdc.vinilos.domain.usecases.GetArtistsUseCase
+import com.tsdc.vinilos.domain.usecases.GetCollectorByIdUseCase
 import com.tsdc.vinilos.domain.usecases.GetCollectorsUseCase
 import com.tsdc.vinilos.domain.usecases.IsFavoriteArtistUseCase
 import com.tsdc.vinilos.domain.usecases.ToggleFavoriteArtistUseCase
@@ -87,5 +88,9 @@ object AppModule {
 
     val getCollectorsUseCase: GetCollectorsUseCase by lazy {
         GetCollectorsUseCase(collectorRepository)
+    }
+
+    val getCollectorByIdUseCase: GetCollectorByIdUseCase by lazy {
+        GetCollectorByIdUseCase(collectorRepository)
     }
 }
