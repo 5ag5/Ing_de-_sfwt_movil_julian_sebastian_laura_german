@@ -55,7 +55,8 @@ fun HomeScreen(
     collectorViewModel: CollectorViewModel,
     initialTab: Int = 0,
     onAlbumClick: (Int) -> Unit,
-    onArtistClick: (Int) -> Unit = {}
+    onArtistClick: (Int) -> Unit = {},
+    onCollectorClick: (Int) -> Unit = {}
 ) {
     var selectedIndex by remember { mutableIntStateOf(initialTab) }
 
@@ -134,7 +135,10 @@ fun HomeScreen(
                     viewModel = artistViewModel,
                     onArtistClick = onArtistClick
                 )
-                3 -> CollectorScreen(viewModel = collectorViewModel)
+                3 -> CollectorScreen(
+                    viewModel = collectorViewModel,
+                    onCollectorClick = onCollectorClick
+                )
             }
         }
     }

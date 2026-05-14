@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,15 +36,17 @@ fun CollectorItemPreview() {
             id = 1,
             name = "Mateo Rivera",
             telephone = "3001112233",
-            email = "mateo@mail.com"
-        ),
-        albumCount = 142
+            email = "mateo@mail.com",
+            albumCount = 142
+        )
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CollectorItem(collector: Collector, albumCount: Int = 0) {
+fun CollectorItem(collector: Collector, onClick: () -> Unit = {}) {
     Card(
+        onClick = onClick,
         modifier = Modifier
             .testTag(UiTestTags.COLLECTOR_LIST_ITEM)
             .fillMaxWidth()
@@ -101,7 +104,7 @@ fun CollectorItem(collector: Collector, albumCount: Int = 0) {
             }
 
             Text(
-                text = albumCount.toString(),
+                text = collector.albumCount.toString(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF2B35BD)
