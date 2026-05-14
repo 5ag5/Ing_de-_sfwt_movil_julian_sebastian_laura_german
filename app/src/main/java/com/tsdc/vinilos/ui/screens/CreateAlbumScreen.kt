@@ -15,12 +15,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -28,6 +31,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,12 +41,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.tsdc.vinilos.ui.shared.constants.UiTestTags
 import com.tsdc.vinilos.ui.shared.components.VinilosNavBar
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateAlbumScreen(
     onBack: () -> Unit,
@@ -57,6 +67,10 @@ fun CreateAlbumScreen(
     var recordLabel by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
     var isGenreExpanded by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = System.currentTimeMillis()
+    )
 
     val genres = listOf(
         "Classical",
@@ -64,6 +78,31 @@ fun CreateAlbumScreen(
         "Rock",
         "Folk"
     )
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            releaseDate = millis.toUsDateString()
+                        }
+                        showDatePicker = false
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 
     Scaffold(
         containerColor = Color(0xFFF2F2F6),
@@ -76,6 +115,7 @@ fun CreateAlbumScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
+                .testTag(UiTestTags.CREATE_ALBUM_ROOT)
                 .fillMaxSize()
                 .background(Color(0xFFF2F2F6))
                 .padding(paddingValues)
@@ -88,7 +128,10 @@ fun CreateAlbumScreen(
                     .padding(top = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onBack) {
+                IconButton(
+                    onClick = onBack,
+                    modifier = Modifier.testTag(UiTestTags.CREATE_ALBUM_BACK_BUTTON)
+                ) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = "Back",
@@ -123,21 +166,28 @@ fun CreateAlbumScreen(
             CreateAlbumTextField(
                 value = albumTitle,
                 onValueChange = { albumTitle = it },
-                placeholder = "Album Title"
+                placeholder = "Album Title",
+                modifier = Modifier.testTag(UiTestTags.CREATE_ALBUM_TITLE_FIELD)
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
             CreateAlbumTextField(
                 value = releaseDate,
-                onValueChange = { releaseDate = it },
+                onValueChange = {},
                 placeholder = "mm/dd/yyyy",
+                modifier = Modifier
+                    .testTag(UiTestTags.CREATE_ALBUM_DATE_FIELD)
+                    .clickable { showDatePicker = true },
+                readOnly = true,
                 trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Event,
-                        contentDescription = "Select release date",
-                        tint = Color(0xFF111111)
-                    )
+                    IconButton(onClick = { showDatePicker = true }) {
+                        Icon(
+                            imageVector = Icons.Filled.KeyboardArrowDown,
+                            contentDescription = "Select release date",
+                            tint = Color(0xFF111111)
+                        )
+                    }
                 }
             )
 
@@ -146,12 +196,17 @@ fun CreateAlbumScreen(
             CreateAlbumTextField(
                 value = coverUrl,
                 onValueChange = { coverUrl = it },
-                placeholder = "Cover URL"
+                placeholder = "Cover URL",
+                modifier = Modifier.testTag(UiTestTags.CREATE_ALBUM_COVER_FIELD)
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Column(modifier = Modifier.fillMaxWidth()) {
+            ExposedDropdownMenuBox(
+                expanded = isGenreExpanded,
+                onExpandedChange = { isGenreExpanded = !isGenreExpanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 OutlinedTextField(
                     value = genre,
                     onValueChange = {},
@@ -160,20 +215,17 @@ fun CreateAlbumScreen(
                         Text(text = "Genre", color = Color(0xFF6B7280))
                     },
                     trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Filled.KeyboardArrowDown,
-                            contentDescription = "Open genre options",
-                            tint = Color(0xFF6B7280)
-                        )
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = isGenreExpanded)
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { isGenreExpanded = true },
+                        .testTag(UiTestTags.CREATE_ALBUM_GENRE_FIELD)
+                        .menuAnchor()
+                        .fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
                     colors = createAlbumFieldColors()
                 )
 
-                DropdownMenu(
+                ExposedDropdownMenu(
                     expanded = isGenreExpanded,
                     onDismissRequest = { isGenreExpanded = false }
                 ) {
@@ -194,7 +246,8 @@ fun CreateAlbumScreen(
             CreateAlbumTextField(
                 value = recordLabel,
                 onValueChange = { recordLabel = it },
-                placeholder = "Record Label"
+                placeholder = "Record Label",
+                modifier = Modifier.testTag(UiTestTags.CREATE_ALBUM_LABEL_FIELD)
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -204,7 +257,8 @@ fun CreateAlbumScreen(
                 onValueChange = { description = it },
                 placeholder = "Description",
                 minLines = 4,
-                maxLines = 4
+                maxLines = 4,
+                modifier = Modifier.testTag(UiTestTags.CREATE_ALBUM_DESCRIPTION_FIELD)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -212,6 +266,7 @@ fun CreateAlbumScreen(
             Button(
                 onClick = onCreateAlbum,
                 modifier = Modifier
+                    .testTag(UiTestTags.CREATE_ALBUM_SUBMIT_BUTTON)
                     .fillMaxWidth()
                     .height(54.dp),
                 shape = RoundedCornerShape(28.dp),
@@ -228,6 +283,7 @@ fun CreateAlbumScreen(
             TextButton(
                 onClick = onSaveDraft,
                 modifier = Modifier
+                    .testTag(UiTestTags.CREATE_ALBUM_SAVE_DRAFT_BUTTON)
                     .fillMaxWidth()
                     .padding(top = 4.dp),
                 colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF6B7280))
@@ -249,6 +305,8 @@ private fun CreateAlbumTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
+    modifier: Modifier = Modifier,
+    readOnly: Boolean = false,
     minLines: Int = 1,
     maxLines: Int = 1,
     trailingIcon: @Composable (() -> Unit)? = null
@@ -256,11 +314,12 @@ private fun CreateAlbumTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
+        readOnly = readOnly,
         placeholder = {
             Text(text = placeholder, color = Color(0xFF6B7280))
         },
         trailingIcon = trailingIcon,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
         minLines = minLines,
         maxLines = maxLines,
@@ -277,6 +336,11 @@ private fun createAlbumFieldColors() = OutlinedTextFieldDefaults.colors(
     focusedTextColor = Color(0xFF1F2937),
     unfocusedTextColor = Color(0xFF1F2937)
 )
+
+private fun Long.toUsDateString(): String {
+    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.US)
+    return formatter.format(Date(this))
+}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
