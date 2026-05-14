@@ -8,7 +8,8 @@ fun CollectorDto.toDomain(): Collector = Collector(
     id = id,
     name = name,
     telephone = telephone,
-    email = email
+    email = email,
+    albumCount = collectorAlbums.size
 )
 
 fun Collector.toEntity(): CollectorEntity = CollectorEntity(
