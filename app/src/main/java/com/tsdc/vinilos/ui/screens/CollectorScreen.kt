@@ -68,7 +68,7 @@ fun CollectorScreenPreview() {
 }
 
 @Composable
-fun CollectorScreen(viewModel: CollectorViewModel) {
+fun CollectorScreen(viewModel: CollectorViewModel, onCollectorClick: (Int) -> Unit = {}) {
     val collectors by viewModel.collectors.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
@@ -240,7 +240,10 @@ fun CollectorScreen(viewModel: CollectorViewModel) {
             else -> {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(filteredCollectors, key = { it.id }) { collector ->
-                        CollectorItem(collector = collector, albumCount = (50..350).random())
+                        CollectorItem(
+                            collector = collector,
+                            onClick = { onCollectorClick(collector.id) }
+                        )
                     }
                 }
             }
