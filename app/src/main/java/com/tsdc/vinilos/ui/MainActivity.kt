@@ -12,6 +12,7 @@ import com.tsdc.vinilos.di.AppModule
 import com.tsdc.vinilos.ui.screens.AlbumDetailScreen
 import com.tsdc.vinilos.ui.screens.ArtistDetailScreen
 import com.tsdc.vinilos.ui.screens.CollectorDetailScreen
+import com.tsdc.vinilos.ui.screens.CreateAlbumScreen
 import com.tsdc.vinilos.ui.screens.HomeScreen
 import com.tsdc.vinilos.ui.shared.theme.VinilosTheme
 import com.tsdc.vinilos.ui.viewmodels.AlbumDetailViewModel
@@ -46,6 +47,9 @@ class MainActivity : ComponentActivity() {
                             albumViewModel = viewModel,
                             artistViewModel = artistViewModel,
                             collectorViewModel = collectorViewModel,
+                            onCreateAlbumClick = {
+                                navController.navigate("create_album")
+                            },
                             onAlbumClick = { albumId ->
                                 navController.navigate("album_detail/$albumId")
                             },
@@ -63,6 +67,9 @@ class MainActivity : ComponentActivity() {
                             artistViewModel = artistViewModel,
                             collectorViewModel = collectorViewModel,
                             initialTab = 1,
+                            onCreateAlbumClick = {
+                                navController.navigate("create_album")
+                            },
                             onAlbumClick = { albumId ->
                                 navController.navigate("album_detail/$albumId")
                             },
@@ -80,6 +87,9 @@ class MainActivity : ComponentActivity() {
                             artistViewModel = artistViewModel,
                             collectorViewModel = collectorViewModel,
                             initialTab = 2,
+                            onCreateAlbumClick = {
+                                navController.navigate("create_album")
+                            },
                             onAlbumClick = { albumId ->
                                 navController.navigate("album_detail/$albumId")
                             },
@@ -105,6 +115,29 @@ class MainActivity : ComponentActivity() {
                             },
                             onCollectorClick = { collectorId ->
                                 navController.navigate("collector_detail/$collectorId")
+                            }
+                        )
+                    }
+                    composable(
+                        route = "create_album"
+                    ) {
+                        CreateAlbumScreen(
+                            onBack = { navController.popBackStack() },
+                            onBottomNavSelected = { index ->
+                                when (index) {
+                                    0 -> navController.navigate("home") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                    1 -> navController.navigate("home_albums") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                    2 -> navController.navigate("home_artists") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                    3 -> navController.navigate("home") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                }
                             }
                         )
                     }

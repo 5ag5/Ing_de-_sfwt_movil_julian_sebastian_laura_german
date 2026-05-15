@@ -43,6 +43,7 @@ fun HomeScreenPreview() {
         albumViewModel = AlbumViewModel(AppModule.getAlbumsUseCase),
         artistViewModel = ArtistViewModel(AppModule.getArtistsUseCase),
         collectorViewModel = CollectorViewModel(AppModule.getCollectorsUseCase),
+        onCreateAlbumClick = {},
         onAlbumClick = {},
         onArtistClick = {}
     )
@@ -54,6 +55,7 @@ fun HomeScreen(
     artistViewModel: ArtistViewModel,
     collectorViewModel: CollectorViewModel,
     initialTab: Int = 0,
+    onCreateAlbumClick: () -> Unit = {},
     onAlbumClick: (Int) -> Unit,
     onArtistClick: (Int) -> Unit = {},
     onCollectorClick: (Int) -> Unit = {}
@@ -72,7 +74,7 @@ fun HomeScreen(
         floatingActionButton = {
             if (selectedIndex == 1) {
                 FloatingActionButton(
-                    onClick = { },
+                    onClick = onCreateAlbumClick,
                     containerColor = Color(0xFF2B35BD),
                     shape = CircleShape,
                     modifier = Modifier.size(52.dp)
