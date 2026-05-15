@@ -1,6 +1,6 @@
 package com.tsdc.vinilos
 
-import com.tsdc.vinilos.domain.models.Album
+import com.tsdc.vinilos.domain.models.NewAlbum
 import com.tsdc.vinilos.domain.repositories.AlbumRepository
 
 /**
@@ -52,4 +52,17 @@ class FakeAlbumRepository(
     override suspend fun getAlbums(): List<Album> = albums
 
     override suspend fun getAlbumById(id: Int): Album? = albums.find { it.id == id }
+
+    override suspend fun createAlbum(newAlbum: NewAlbum): Album {
+        val nextId = (albums.maxOfOrNull { it.id } ?: 0) + 1
+        return Album(
+            id = nextId,
+            name = newAlbum.name,
+            cover = newAlbum.cover,
+            releaseDate = newAlbum.releaseDateIso,
+            description = newAlbum.description,
+            genre = newAlbum.genre,
+            recordLabel = newAlbum.recordLabel
+        )
+    }
 }

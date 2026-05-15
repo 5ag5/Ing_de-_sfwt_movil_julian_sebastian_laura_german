@@ -6,6 +6,7 @@ import com.tsdc.vinilos.data.local.entities.FavoriteArtistEntity
 import com.tsdc.vinilos.data.remote.dto.AlbumDto
 import com.tsdc.vinilos.data.remote.dto.ArtistDto
 import com.tsdc.vinilos.data.remote.dto.CollectorDto
+import com.tsdc.vinilos.data.remote.dto.CreateAlbumRequest
 import com.tsdc.vinilos.data.remote.network.ServiceAdapter
 import com.tsdc.vinilos.data.remote.network.VinilosApiService
 import com.tsdc.vinilos.domain.models.Album
@@ -95,6 +96,10 @@ private class FakeVinilosApiServiceForArtists(
     override suspend fun getCollectors(): List<CollectorDto> = emptyList()
 
     override suspend fun getCollectorById(collectorId: Int): CollectorDto {
+        error("no usado en test de artistas")
+    }
+
+    override suspend fun createAlbum(body: CreateAlbumRequest): AlbumDto {
         error("no usado en test de artistas")
     }
 }
