@@ -1,8 +1,10 @@
 package com.tsdc.vinilos.data.remote.network
 import com.tsdc.vinilos.data.mappers.toDomain
+import com.tsdc.vinilos.data.remote.dto.TrackRequest
 import com.tsdc.vinilos.domain.models.Album
 import com.tsdc.vinilos.domain.models.Artist
 import com.tsdc.vinilos.domain.models.Collector
+import com.tsdc.vinilos.domain.models.Track
 
 class ServiceAdapter(private val apiService: VinilosApiService) {
     suspend fun fetchAlbums(): List<Album> = 
@@ -23,4 +25,10 @@ class ServiceAdapter(private val apiService: VinilosApiService) {
 
     suspend fun fetchCollectorById(collectorId: Int): Collector =
         apiService.getCollectorById(collectorId).toDomain()
+
+    suspend fun fetchAlbumTracks(albumId: Int): List<Track> =
+        apiService.getAlbumTracks(albumId).map { it.toDomain() }
+
+    suspend fun addTrackToAlbum(albumId: Int, name: String, duration: String): Track =
+        apiService.addTrackToAlbum(albumId, TrackRequest(name, duration)).toDomain()
 }
