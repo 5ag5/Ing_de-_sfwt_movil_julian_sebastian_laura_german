@@ -2,7 +2,6 @@ package com.tsdc.vinilos.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -33,10 +33,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,38 +46,39 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.tsdc.vinilos.ui.shared.constants.UiTestTags
+import com.tsdc.vinilos.domain.models.Album
+import com.tsdc.vinilos.domain.models.NewAlbum
+import com.tsdc.vinilos.domain.repositories.AlbumRepository
+import com.tsdc.vinilos.domain.usecases.CreateAlbumUseCase
 import com.tsdc.vinilos.ui.shared.components.VinilosNavBar
+import com.tsdc.vinilos.ui.shared.constants.UiTestTags
+import com.tsdc.vinilos.ui.viewmodels.CreateAlbumUiState
+import com.tsdc.vinilos.ui.viewmodels.CreateAlbumViewModel
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateAlbumScreen(
+    viewModel: CreateAlbumViewModel,
     onBack: () -> Unit,
     onBottomNavSelected: (Int) -> Unit,
-    onCreateAlbum: () -> Unit = {},
-    onSaveDraft: () -> Unit = {}
+    onCreateSuccess: () -> Unit = {},
+    onSaveDraft: () -> Unit = { viewModel.resetForm() }
 ) {
-    var albumTitle by rememberSaveable { mutableStateOf("") }
-    var releaseDate by rememberSaveable { mutableStateOf("") }
-    var coverUrl by rememberSaveable { mutableStateOf("") }
-    var genre by rememberSaveable { mutableStateOf("") }
-    var recordLabel by rememberSaveable { mutableStateOf("") }
-    var description by rememberSaveable { mutableStateOf("") }
-    var isGenreExpanded by remember { mutableStateOf(false) }
+    val state by viewModel.uiState.collectAsState()
     var showDatePicker by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = System.currentTimeMillis()
-    )
 
-    val genres = listOf(
-        "Classical",
-        "Salsa",
-        "Rock",
-        "Folk"
-    )
+    val initialMillis = remember(state.releaseDate) {
+        if (state.releaseDate.isBlank()) {
+            System.currentTimeMillis()
+        } else {
+            runCatching {
+                SimpleDateFormat("MM/dd/yyyy", Locale.US).parse(state.releaseDate)?.time
+            }.getOrNull() ?: System.currentTimeMillis()
+        }
+    }
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialMillis)
 
     if (showDatePicker) {
         DatePickerDialog(
@@ -86,7 +87,7 @@ fun CreateAlbumScreen(
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
-                            releaseDate = millis.toUsDateString()
+                            viewModel.onReleaseDateMillis(millis)
                         }
                         showDatePicker = false
                     }
@@ -164,8 +165,8 @@ fun CreateAlbumScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             CreateAlbumTextField(
-                value = albumTitle,
-                onValueChange = { albumTitle = it },
+                value = state.title,
+                onValueChange = viewModel::onTitleChange,
                 placeholder = "Album Title",
                 modifier = Modifier.testTag(UiTestTags.CREATE_ALBUM_TITLE_FIELD)
             )
@@ -173,7 +174,7 @@ fun CreateAlbumScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             CreateAlbumTextField(
-                value = releaseDate,
+                value = state.releaseDate,
                 onValueChange = {},
                 placeholder = "mm/dd/yyyy",
                 modifier = Modifier
@@ -194,8 +195,8 @@ fun CreateAlbumScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             CreateAlbumTextField(
-                value = coverUrl,
-                onValueChange = { coverUrl = it },
+                value = state.coverUrl,
+                onValueChange = viewModel::onCoverUrlChange,
                 placeholder = "Cover URL",
                 modifier = Modifier.testTag(UiTestTags.CREATE_ALBUM_COVER_FIELD)
             )
@@ -203,19 +204,19 @@ fun CreateAlbumScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             ExposedDropdownMenuBox(
-                expanded = isGenreExpanded,
-                onExpandedChange = { isGenreExpanded = !isGenreExpanded },
+                expanded = state.isGenreMenuExpanded,
+                onExpandedChange = { viewModel.onGenreMenuExpanded(it) },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 OutlinedTextField(
-                    value = genre,
+                    value = state.genre,
                     onValueChange = {},
                     readOnly = true,
                     placeholder = {
                         Text(text = "Genre", color = Color(0xFF6B7280))
                     },
                     trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = isGenreExpanded)
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.isGenreMenuExpanded)
                     },
                     modifier = Modifier
                         .testTag(UiTestTags.CREATE_ALBUM_GENRE_FIELD)
@@ -225,17 +226,52 @@ fun CreateAlbumScreen(
                     colors = createAlbumFieldColors()
                 )
 
-                ExposedDropdownMenu(
-                    expanded = isGenreExpanded,
-                    onDismissRequest = { isGenreExpanded = false }
+                DropdownMenu(
+                    expanded = state.isGenreMenuExpanded,
+                    onDismissRequest = { viewModel.onGenreMenuExpanded(false) }
                 ) {
-                    genres.forEach { genreOption ->
+                    CreateAlbumUiState.genres.forEach { genreOption ->
                         DropdownMenuItem(
                             text = { Text(text = genreOption) },
-                            onClick = {
-                                genre = genreOption
-                                isGenreExpanded = false
-                            }
+                            onClick = { viewModel.onGenreSelected(genreOption) }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            ExposedDropdownMenuBox(
+                expanded = state.isLabelMenuExpanded,
+                onExpandedChange = { viewModel.onLabelMenuExpanded(it) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = state.recordLabel,
+                    onValueChange = {},
+                    readOnly = true,
+                    placeholder = {
+                        Text(text = "Record Label", color = Color(0xFF6B7280))
+                    },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = state.isLabelMenuExpanded)
+                    },
+                    modifier = Modifier
+                        .testTag(UiTestTags.CREATE_ALBUM_LABEL_FIELD)
+                        .menuAnchor()
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = createAlbumFieldColors()
+                )
+
+                DropdownMenu(
+                    expanded = state.isLabelMenuExpanded,
+                    onDismissRequest = { viewModel.onLabelMenuExpanded(false) }
+                ) {
+                    CreateAlbumUiState.recordLabels.forEach { labelOption ->
+                        DropdownMenuItem(
+                            text = { Text(text = labelOption) },
+                            onClick = { viewModel.onRecordLabelSelected(labelOption) }
                         )
                     }
                 }
@@ -244,27 +280,29 @@ fun CreateAlbumScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             CreateAlbumTextField(
-                value = recordLabel,
-                onValueChange = { recordLabel = it },
-                placeholder = "Record Label",
-                modifier = Modifier.testTag(UiTestTags.CREATE_ALBUM_LABEL_FIELD)
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            CreateAlbumTextField(
-                value = description,
-                onValueChange = { description = it },
+                value = state.description,
+                onValueChange = viewModel::onDescriptionChange,
                 placeholder = "Description",
                 minLines = 4,
                 maxLines = 4,
                 modifier = Modifier.testTag(UiTestTags.CREATE_ALBUM_DESCRIPTION_FIELD)
             )
 
+            state.errorMessage?.let { msg ->
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = msg,
+                    color = Color(0xFFB3261E),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = onCreateAlbum,
+                onClick = { viewModel.submit(onCreateSuccess) },
+                enabled = !state.isSubmitting,
                 modifier = Modifier
                     .testTag(UiTestTags.CREATE_ALBUM_SUBMIT_BUTTON)
                     .fillMaxWidth()
@@ -273,7 +311,7 @@ fun CreateAlbumScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2B35BD))
             ) {
                 Text(
-                    text = "Create Album",
+                    text = if (state.isSubmitting) "Creando…" else "Create Album",
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
@@ -337,15 +375,25 @@ private fun createAlbumFieldColors() = OutlinedTextFieldDefaults.colors(
     unfocusedTextColor = Color(0xFF1F2937)
 )
 
-private fun Long.toUsDateString(): String {
-    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.US)
-    return formatter.format(Date(this))
+private object PreviewCreateAlbumRepository : AlbumRepository {
+    override suspend fun getAlbums(): List<Album> = emptyList()
+    override suspend fun getAlbumById(id: Int): Album? = null
+    override suspend fun createAlbum(newAlbum: NewAlbum): Album = Album(
+        id = 1,
+        name = newAlbum.name,
+        cover = newAlbum.cover,
+        releaseDate = newAlbum.releaseDateIso,
+        description = newAlbum.description,
+        genre = newAlbum.genre,
+        recordLabel = newAlbum.recordLabel
+    )
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun CreateAlbumScreenPreview() {
     CreateAlbumScreen(
+        viewModel = CreateAlbumViewModel(CreateAlbumUseCase(PreviewCreateAlbumRepository)),
         onBack = {},
         onBottomNavSelected = {}
     )

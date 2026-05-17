@@ -2,7 +2,9 @@ package com.tsdc.vinilos.data.mappers
 
 import com.tsdc.vinilos.data.local.entities.AlbumEntity
 import com.tsdc.vinilos.data.remote.dto.AlbumDto
+import com.tsdc.vinilos.data.remote.dto.CreateAlbumRequest
 import com.tsdc.vinilos.domain.models.Album
+import com.tsdc.vinilos.domain.models.NewAlbum
 
 fun AlbumDto.toDomain(): Album = Album(
     id = id,
@@ -29,6 +31,15 @@ fun AlbumEntity.toDomain(): Album = Album(
     name = name,
     cover = cover,
     releaseDate = releaseDate,
+    description = description,
+    genre = genre,
+    recordLabel = recordLabel
+)
+
+fun NewAlbum.toCreateRequest(): CreateAlbumRequest = CreateAlbumRequest(
+    name = name,
+    cover = cover,
+    releaseDate = releaseDateIso,
     description = description,
     genre = genre,
     recordLabel = recordLabel
