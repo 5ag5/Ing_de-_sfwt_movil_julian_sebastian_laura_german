@@ -11,6 +11,7 @@ import com.tsdc.vinilos.domain.repositories.AlbumRepository
 import com.tsdc.vinilos.domain.repositories.ArtistRepository
 import com.tsdc.vinilos.domain.repositories.CollectorRepository
 import com.tsdc.vinilos.domain.usecases.AddTrackToAlbumUseCase
+import com.tsdc.vinilos.domain.usecases.CreateAlbumUseCase
 import com.tsdc.vinilos.domain.usecases.GetAlbumByIdUseCase
 import com.tsdc.vinilos.domain.usecases.GetAlbumTracksUseCase
 import com.tsdc.vinilos.domain.usecases.GetAlbumsUseCase
@@ -62,6 +63,10 @@ object AppModule {
 
     val getAlbumByIdUseCase: GetAlbumByIdUseCase by lazy {
         GetAlbumByIdUseCase(albumRepository)
+    }
+
+    val createAlbumUseCase: CreateAlbumUseCase by lazy {
+        CreateAlbumUseCase(albumRepository)
     }
 
     val getAlbumTracksUseCase: GetAlbumTracksUseCase by lazy {

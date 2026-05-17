@@ -21,6 +21,7 @@ import com.tsdc.vinilos.ui.viewmodels.ArtistDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
 import com.tsdc.vinilos.ui.viewmodels.CollectorDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
+import com.tsdc.vinilos.ui.viewmodels.CreateAlbumViewModel
 
 
 
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
                     AppModule.toggleFavoriteArtistUseCase,
                     AppModule.isFavoriteArtistUseCase
                 )
+                val createAlbumViewModel = CreateAlbumViewModel(AppModule.createAlbumUseCase)
                 val collectorDetailViewModel = CollectorDetailViewModel(AppModule.getCollectorByIdUseCase)
                 val navController = rememberNavController()
 
@@ -125,6 +127,7 @@ class MainActivity : ComponentActivity() {
                         route = "create_album"
                     ) {
                         CreateAlbumScreen(
+                            viewModel = createAlbumViewModel,
                             onBack = { navController.popBackStack() },
                             onBottomNavSelected = { index ->
                                 when (index) {
@@ -141,6 +144,10 @@ class MainActivity : ComponentActivity() {
                                         popUpTo("home") { inclusive = true }
                                     }
                                 }
+                            },
+                            onCreateSuccess = {
+                                viewModel.loadAlbums()
+                                navController.popBackStack()
                             }
                         )
                     }

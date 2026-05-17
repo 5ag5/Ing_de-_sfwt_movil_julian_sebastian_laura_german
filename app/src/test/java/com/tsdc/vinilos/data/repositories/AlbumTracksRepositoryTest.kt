@@ -3,6 +3,7 @@ package com.tsdc.vinilos.data.repositories
 import com.tsdc.vinilos.data.remote.dto.AlbumDto
 import com.tsdc.vinilos.data.remote.dto.ArtistDto
 import com.tsdc.vinilos.data.remote.dto.CollectorDto
+import com.tsdc.vinilos.data.remote.dto.CreateAlbumRequest
 import com.tsdc.vinilos.data.remote.dto.TrackDto
 import com.tsdc.vinilos.data.remote.dto.TrackRequest
 import com.tsdc.vinilos.data.remote.network.ServiceAdapter
@@ -76,6 +77,10 @@ private class FakeVinilosApiServiceForTracks(
     override suspend fun getCollectors(): List<CollectorDto> = emptyList()
 
     override suspend fun getCollectorById(collectorId: Int): CollectorDto {
+        error("no usado en test de tracks")
+    }
+
+    override suspend fun createAlbum(body: CreateAlbumRequest): AlbumDto {
         error("no usado en test de tracks")
     }
 

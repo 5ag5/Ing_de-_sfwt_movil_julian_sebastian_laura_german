@@ -1,10 +1,12 @@
 package com.tsdc.vinilos.data.repositories
 
 import com.tsdc.vinilos.data.local.dao.AlbumDao
+import com.tsdc.vinilos.data.mappers.toCreateRequest
 import com.tsdc.vinilos.data.mappers.toDomain
 import com.tsdc.vinilos.data.mappers.toEntity
 import com.tsdc.vinilos.data.remote.network.ServiceAdapter
 import com.tsdc.vinilos.domain.models.Album
+import com.tsdc.vinilos.domain.models.NewAlbum
 import com.tsdc.vinilos.domain.models.Track
 import com.tsdc.vinilos.domain.repositories.AlbumRepository as AlbumRepositoryInterface
 
@@ -32,6 +34,12 @@ class AlbumRepository(
         } catch (_: Exception) {
             albumDao.getAlbumById(id)?.toDomain()
         }
+
+    override suspend fun createAlbum(newAlbum: NewAlbum): Album {
+        val created = serviceAdapter.createAlbum(newAlbum.toCreateRequest())
+        albumDao.insert(created.toEntity())
+        return created
+    }
 
     override suspend fun getAlbumTracks(albumId: Int): List<Track> =
         serviceAdapter.fetchAlbumTracks(albumId)
