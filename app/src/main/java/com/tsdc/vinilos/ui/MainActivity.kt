@@ -11,6 +11,7 @@ import androidx.navigation.navArgument
 import com.tsdc.vinilos.di.AppModule
 import com.tsdc.vinilos.ui.screens.AlbumDetailScreen
 import com.tsdc.vinilos.ui.screens.ArtistDetailScreen
+import com.tsdc.vinilos.ui.screens.CollectorDetailScreen
 import com.tsdc.vinilos.ui.screens.CreateAlbumScreen
 import com.tsdc.vinilos.ui.screens.HomeScreen
 import com.tsdc.vinilos.ui.shared.theme.VinilosTheme
@@ -18,6 +19,7 @@ import com.tsdc.vinilos.ui.viewmodels.AlbumDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
 import com.tsdc.vinilos.ui.viewmodels.ArtistDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
+import com.tsdc.vinilos.ui.viewmodels.CollectorDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
 import com.tsdc.vinilos.ui.viewmodels.CreateAlbumViewModel
 
@@ -38,6 +40,7 @@ class MainActivity : ComponentActivity() {
                     AppModule.isFavoriteArtistUseCase
                 )
                 val createAlbumViewModel = CreateAlbumViewModel(AppModule.createAlbumUseCase)
+                val collectorDetailViewModel = CollectorDetailViewModel(AppModule.getCollectorByIdUseCase)
                 val navController = rememberNavController()
 
                 NavHost(navController = navController, startDestination = "home") {
@@ -54,6 +57,9 @@ class MainActivity : ComponentActivity() {
                             },
                             onArtistClick = { artistId ->
                                 navController.navigate("artist_detail/$artistId")
+                            },
+                            onCollectorClick = { collectorId ->
+                                navController.navigate("collector_detail/$collectorId")
                             }
                         )
                     }
@@ -71,6 +77,9 @@ class MainActivity : ComponentActivity() {
                             },
                             onArtistClick = { artistId ->
                                 navController.navigate("artist_detail/$artistId")
+                            },
+                            onCollectorClick = { collectorId ->
+                                navController.navigate("collector_detail/$collectorId")
                             }
                         )
                     }
@@ -88,6 +97,26 @@ class MainActivity : ComponentActivity() {
                             },
                             onArtistClick = { artistId ->
                                 navController.navigate("artist_detail/$artistId")
+                            },
+                            onCollectorClick = { collectorId ->
+                                navController.navigate("collector_detail/$collectorId")
+                            }
+                        )
+                    }
+                    composable("home_collectors") {
+                        HomeScreen(
+                            albumViewModel = viewModel,
+                            artistViewModel = artistViewModel,
+                            collectorViewModel = collectorViewModel,
+                            initialTab = 3,
+                            onAlbumClick = { albumId ->
+                                navController.navigate("album_detail/$albumId")
+                            },
+                            onArtistClick = { artistId ->
+                                navController.navigate("artist_detail/$artistId")
+                            },
+                            onCollectorClick = { collectorId ->
+                                navController.navigate("collector_detail/$collectorId")
                             }
                         )
                     }
@@ -144,6 +173,21 @@ class MainActivity : ComponentActivity() {
                             artistId = artistId,
                             onBack = {
                                 navController.navigate("home_artists") {
+                                    popUpTo("home") { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+                    composable(
+                        route = "collector_detail/{collectorId}",
+                        arguments = listOf(navArgument("collectorId") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val collectorId = backStackEntry.arguments?.getInt("collectorId") ?: -1
+                        CollectorDetailScreen(
+                            viewModel = collectorDetailViewModel,
+                            collectorId = collectorId,
+                            onBack = {
+                                navController.navigate("home_collectors") {
                                     popUpTo("home") { inclusive = true }
                                 }
                             }
