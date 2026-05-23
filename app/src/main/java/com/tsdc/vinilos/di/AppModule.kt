@@ -26,7 +26,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object AppModule {
 
-    private const val BASE_URL = "https://backvynils-production-5c50.up.railway.app/"
+    private const val BASE_URL = "http://localhost:3000/"
 
     private lateinit var appContext: Context
 
@@ -76,6 +76,13 @@ object AppModule {
     val addTrackToAlbumUseCase: AddTrackToAlbumUseCase by lazy {
         AddTrackToAlbumUseCase(albumRepository)
     }
+
+    val albumTracksViewModel: com.tsdc.vinilos.ui.viewmodels.AlbumTracksViewModel
+        get() = com.tsdc.vinilos.ui.viewmodels.AlbumTracksViewModel(
+            getAlbumTracksUseCase,
+            addTrackToAlbumUseCase,
+            getAlbumByIdUseCase
+        )
 
     val artistRepository: ArtistRepository by lazy {
         ArtistRepositoryImpl(serviceAdapter, database.favoriteArtistDao(), database.artistDao())

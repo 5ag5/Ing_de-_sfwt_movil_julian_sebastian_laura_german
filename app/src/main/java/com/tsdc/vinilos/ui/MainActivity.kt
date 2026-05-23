@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tsdc.vinilos.di.AppModule
 import com.tsdc.vinilos.ui.screens.AlbumDetailScreen
+import com.tsdc.vinilos.ui.screens.AlbumTracksScreen
 import com.tsdc.vinilos.ui.screens.ArtistDetailScreen
 import com.tsdc.vinilos.ui.screens.CollectorDetailScreen
 import com.tsdc.vinilos.ui.screens.CreateAlbumScreen
@@ -162,6 +163,41 @@ class MainActivity : ComponentActivity() {
                             onBack = {
                                 navController.navigate("home_albums") {
                                     popUpTo("home") { inclusive = true }
+                                }
+                            },
+                            onManageTracks = { id ->
+                                navController.navigate("album_tracks/$id")
+                            }
+                        )
+                    }
+                    composable(
+                        route = "album_tracks/{albumId}",
+                        arguments = listOf(navArgument("albumId") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val albumId = backStackEntry.arguments?.getInt("albumId") ?: -1
+                        AlbumTracksScreen(
+                            viewModel = AppModule.albumTracksViewModel,
+                            albumId = albumId,
+                            onBack = { navController.popBackStack() },
+                            onSaveTracklist = {
+                                navController.navigate("home_albums") {
+                                    popUpTo("home") { inclusive = true }
+                                }
+                            },
+                            onBottomNavSelected = { index ->
+                                when (index) {
+                                    0 -> navController.navigate("home") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                    1 -> navController.navigate("home_albums") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                    2 -> navController.navigate("home_artists") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                    3 -> navController.navigate("home_collectors") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
                                 }
                             }
                         )
