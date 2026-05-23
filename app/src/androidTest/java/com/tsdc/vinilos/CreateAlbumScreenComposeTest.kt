@@ -9,9 +9,11 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.tsdc.vinilos.domain.usecases.CreateAlbumUseCase
 import com.tsdc.vinilos.ui.screens.CreateAlbumScreen
 import com.tsdc.vinilos.ui.shared.constants.UiTestTags
 import com.tsdc.vinilos.ui.shared.theme.VinilosTheme
+import com.tsdc.vinilos.ui.viewmodels.CreateAlbumViewModel
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -23,11 +25,15 @@ class CreateAlbumScreenComposeTest {
     @get:Rule
     val composeRule = createAndroidComposeRule<ComponentActivity>()
 
+    private fun buildViewModel(): CreateAlbumViewModel =
+        CreateAlbumViewModel(CreateAlbumUseCase(FakeAlbumRepository()))
+
     @Test
     fun createAlbumScreen_showsMainElements() {
         composeRule.setContent {
             VinilosTheme {
                 CreateAlbumScreen(
+                    viewModel = buildViewModel(),
                     onBack = {},
                     onBottomNavSelected = {}
                 )
@@ -51,6 +57,7 @@ class CreateAlbumScreenComposeTest {
         composeRule.setContent {
             VinilosTheme {
                 CreateAlbumScreen(
+                    viewModel = buildViewModel(),
                     onBack = {},
                     onBottomNavSelected = {}
                 )
@@ -59,12 +66,10 @@ class CreateAlbumScreenComposeTest {
 
         composeRule.onNodeWithTag(UiTestTags.CREATE_ALBUM_TITLE_FIELD).performTextInput("A Night at the Opera")
         composeRule.onNodeWithTag(UiTestTags.CREATE_ALBUM_COVER_FIELD).performTextInput("https://img.test/queen.jpg")
-        composeRule.onNodeWithTag(UiTestTags.CREATE_ALBUM_LABEL_FIELD).performTextInput("EMI")
         composeRule.onNodeWithTag(UiTestTags.CREATE_ALBUM_DESCRIPTION_FIELD).performTextInput("Classic album")
 
         composeRule.onNodeWithTag(UiTestTags.CREATE_ALBUM_TITLE_FIELD).assertTextContains("A Night at the Opera")
         composeRule.onNodeWithTag(UiTestTags.CREATE_ALBUM_COVER_FIELD).assertTextContains("https://img.test/queen.jpg")
-        composeRule.onNodeWithTag(UiTestTags.CREATE_ALBUM_LABEL_FIELD).assertTextContains("EMI")
         composeRule.onNodeWithTag(UiTestTags.CREATE_ALBUM_DESCRIPTION_FIELD).assertTextContains("Classic album")
     }
 
@@ -73,6 +78,7 @@ class CreateAlbumScreenComposeTest {
         composeRule.setContent {
             VinilosTheme {
                 CreateAlbumScreen(
+                    viewModel = buildViewModel(),
                     onBack = {},
                     onBottomNavSelected = {}
                 )
@@ -92,29 +98,26 @@ class CreateAlbumScreenComposeTest {
     @Test
     fun createAlbumScreen_clickActions_invokesCallbacks() {
         var backClicks = 0
-        var createClicks = 0
         var saveDraftClicks = 0
         var selectedBottomIndex = -1
 
         composeRule.setContent {
             VinilosTheme {
                 CreateAlbumScreen(
+                    viewModel = buildViewModel(),
                     onBack = { backClicks++ },
                     onBottomNavSelected = { selectedBottomIndex = it },
-                    onCreateAlbum = { createClicks++ },
                     onSaveDraft = { saveDraftClicks++ }
                 )
             }
         }
 
         composeRule.onNodeWithTag(UiTestTags.CREATE_ALBUM_BACK_BUTTON).performClick()
-        composeRule.onNodeWithTag(UiTestTags.CREATE_ALBUM_SUBMIT_BUTTON).performClick()
         composeRule.onNodeWithTag(UiTestTags.CREATE_ALBUM_SAVE_DRAFT_BUTTON).performClick()
         composeRule.onNodeWithText("ARTISTS").performClick()
         composeRule.waitForIdle()
 
         assertEquals(1, backClicks)
-        assertEquals(1, createClicks)
         assertEquals(1, saveDraftClicks)
         assertEquals(2, selectedBottomIndex)
     }

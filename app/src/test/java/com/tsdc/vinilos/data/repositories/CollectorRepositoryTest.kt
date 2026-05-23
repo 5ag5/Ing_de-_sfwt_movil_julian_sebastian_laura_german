@@ -75,7 +75,7 @@ private class FakeVinilosApiServiceForCollectors(
 
     override suspend fun getAlbums(): List<AlbumDto> = emptyList()
 
-    override suspend fun getAlbumById(albumId: Int): Album {
+    override suspend fun getAlbumById(albumId: Int): AlbumDto {
         error("no usado en test de coleccionistas")
     }
 
