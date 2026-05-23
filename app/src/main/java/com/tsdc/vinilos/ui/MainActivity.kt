@@ -3,6 +3,7 @@ package com.tsdc.vinilos.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tsdc.vinilos.di.AppModule
 import com.tsdc.vinilos.ui.screens.AlbumDetailScreen
+import com.tsdc.vinilos.ui.screens.AlbumTracksScreen
 import com.tsdc.vinilos.ui.screens.ArtistDetailScreen
 import com.tsdc.vinilos.ui.screens.CollectorDetailScreen
 import com.tsdc.vinilos.ui.screens.CreateAlbumScreen
@@ -20,6 +22,7 @@ import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
 import com.tsdc.vinilos.ui.viewmodels.ArtistDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
 import com.tsdc.vinilos.ui.viewmodels.CollectorDetailViewModel
+import com.tsdc.vinilos.ui.viewmodels.AlbumTracksViewModel
 import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
 import com.tsdc.vinilos.ui.viewmodels.CreateAlbumViewModel
 
@@ -162,6 +165,46 @@ class MainActivity : ComponentActivity() {
                             onBack = {
                                 navController.navigate("home_albums") {
                                     popUpTo("home") { inclusive = true }
+                                }
+                            },
+                            onManageTracks = { id ->
+                                navController.navigate("album_tracks/$id")
+                            }
+                        )
+                    }
+                    composable(
+                        route = "album_tracks/{albumId}",
+                        arguments = listOf(navArgument("albumId") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val albumId = backStackEntry.arguments?.getInt("albumId") ?: -1
+                        val tracksViewModel: AlbumTracksViewModel = viewModel(
+                            viewModelStoreOwner = backStackEntry,
+                            factory = AppModule.albumTracksViewModelFactory
+                        )
+                        AlbumTracksScreen(
+                            viewModel = tracksViewModel,
+                            albumId = albumId,
+                            onBack = { navController.popBackStack() },
+                            onSaveTracklist = {
+                                viewModel.loadAlbums()
+                                navController.navigate("home_albums") {
+                                    popUpTo("home") { inclusive = true }
+                                }
+                            },
+                            onBottomNavSelected = { index ->
+                                when (index) {
+                                    0 -> navController.navigate("home") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                    1 -> navController.navigate("home_albums") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                    2 -> navController.navigate("home_artists") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                    3 -> navController.navigate("home_collectors") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
                                 }
                             }
                         )

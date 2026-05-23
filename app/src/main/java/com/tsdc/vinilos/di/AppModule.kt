@@ -77,6 +77,14 @@ object AppModule {
         AddTrackToAlbumUseCase(albumRepository)
     }
 
+    val albumTracksViewModelFactory: com.tsdc.vinilos.ui.viewmodels.AlbumTracksViewModelFactory by lazy {
+        com.tsdc.vinilos.ui.viewmodels.AlbumTracksViewModelFactory(
+            getAlbumTracksUseCase,
+            addTrackToAlbumUseCase,
+            getAlbumByIdUseCase
+        )
+    }
+
     val artistRepository: ArtistRepository by lazy {
         ArtistRepositoryImpl(serviceAdapter, database.favoriteArtistDao(), database.artistDao())
     }

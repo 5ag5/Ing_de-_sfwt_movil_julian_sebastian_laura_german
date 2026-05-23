@@ -57,7 +57,8 @@ fun AlbumDetailScreenPreview() {
             isLoading = false,
             error = null,
             onRetry = {},
-            onBack = {}
+            onBack = {},
+            onManageTracks = {}
         )
     }
 }
@@ -66,7 +67,8 @@ fun AlbumDetailScreenPreview() {
 fun AlbumDetailScreen(
     viewModel: AlbumDetailViewModel,
     albumId: Int,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onManageTracks: (Int) -> Unit = {}
 ) {
     val album by viewModel.album.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -81,7 +83,8 @@ fun AlbumDetailScreen(
         isLoading = isLoading,
         error = error,
         onRetry = { viewModel.loadAlbum(albumId) },
-        onBack = onBack
+        onBack = onBack,
+        onManageTracks = { album?.id?.let(onManageTracks) }
     )
 }
 
@@ -91,7 +94,8 @@ private fun AlbumDetailContent(
     isLoading: Boolean,
     error: String?,
     onRetry: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onManageTracks: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -196,6 +200,16 @@ private fun AlbumDetailContent(
         )
 
         Spacer(modifier = Modifier.height(20.dp))
+        Button(
+            onClick = onManageTracks,
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF111111)),
+            modifier = Modifier
+                .testTag(UiTestTags.ALBUM_DETAIL_TRACKS_BUTTON)
+                .fillMaxWidth()
+        ) {
+            Text(text = "Manage Tracklist", color = Color.White)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = onBack,
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2B35BD)),

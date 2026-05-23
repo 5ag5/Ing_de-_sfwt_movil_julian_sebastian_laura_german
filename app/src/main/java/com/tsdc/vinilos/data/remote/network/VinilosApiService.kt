@@ -9,8 +9,6 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
-import com.tsdc.vinilos.domain.models.Album
-
 interface VinilosApiService {
     @GET("albums")
     suspend fun getAlbums(): List<AlbumDto>
@@ -18,7 +16,7 @@ interface VinilosApiService {
     @GET("albums/{albumId}")
     suspend fun getAlbumById(
         @Path("albumId") albumId: Int
-    ): Album
+    ): AlbumDto
 
     @POST("albums")
     suspend fun createAlbum(@Body body: CreateAlbumRequest): AlbumDto
