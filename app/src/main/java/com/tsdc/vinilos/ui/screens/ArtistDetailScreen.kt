@@ -39,12 +39,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.tsdc.vinilos.domain.models.Artist
+import com.tsdc.vinilos.ui.shared.constants.ColorConstants
 import com.tsdc.vinilos.ui.shared.constants.UiTestTags
 import com.tsdc.vinilos.ui.shared.theme.VinilosTheme
 import com.tsdc.vinilos.ui.viewmodels.ArtistDetailViewModel
@@ -131,7 +134,7 @@ private fun ArtistDetailContent(
                 IconButton(onClick = onBack) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = "Volver",
                         tint = Color(0xFF2B35BD)
                     )
                 }
@@ -194,10 +197,13 @@ private fun ArtistDetailContent(
                     .aspectRatio(1.55f)
                     .clip(RoundedCornerShape(16.dp))
                     .background(Color(0xFFE1E4F2))
+                    .semantics(mergeDescendants = true) {
+                        contentDescription = "Artista destacado ${currentArtist.name}"
+                    }
             ) {
                 AsyncImage(
                     model = currentArtist.image,
-                    contentDescription = currentArtist.name,
+                    contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -206,9 +212,10 @@ private fun ArtistDetailContent(
                         .fillMaxSize()
                         .background(
                             brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color.Black.copy(alpha = 0.65f)
+                                colorStops = arrayOf(
+                                    0.0f to Color.Transparent,
+                                    0.45f to Color.Black.copy(alpha = 0.25f),
+                                    1.0f to Color.Black.copy(alpha = 0.88f)
                                 )
                             )
                         )
@@ -223,7 +230,7 @@ private fun ArtistDetailContent(
                         fontSize = 12.sp,
                         letterSpacing = 1.4.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.White.copy(alpha = 0.85f)
+                        color = ColorConstants.accentGoldAccessible
                     )
                     Text(
                         text = currentArtist.name,

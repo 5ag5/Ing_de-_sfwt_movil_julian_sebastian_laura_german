@@ -45,6 +45,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +54,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tsdc.vinilos.di.AppModule
+import com.tsdc.vinilos.ui.shared.constants.ColorConstants
 import com.tsdc.vinilos.ui.shared.constants.UiTestTags
 import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
 
@@ -126,21 +129,38 @@ fun CollectorScreen(viewModel: CollectorViewModel, onCollectorClick: (Int) -> Un
             }
         }
 
+        val searchFieldDescription = if (searchQuery.isBlank()) {
+            "Buscar coleccionistas"
+        } else {
+            "Buscar coleccionistas, $searchQuery"
+        }
         TextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 10.dp)
-                .testTag(UiTestTags.COLLECTOR_SEARCH_FIELD),
+                .testTag(UiTestTags.COLLECTOR_SEARCH_FIELD)
+                .semantics { contentDescription = searchFieldDescription },
+            label = {
+                Text(
+                    text = "Buscar coleccionistas",
+                    color = ColorConstants.navUnselected,
+                    fontSize = 15.sp
+                )
+            },
             placeholder = {
-                Text("Search collectors...", color = Color(0xFFA0A7B5), fontSize = 15.sp)
+                Text(
+                    text = "Nombre o correo...",
+                    color = ColorConstants.navUnselected,
+                    fontSize = 15.sp
+                )
             },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = null,
-                    tint = Color(0xFFA0A7B5)
+                    tint = ColorConstants.navUnselected
                 )
             },
             singleLine = true,
@@ -148,8 +168,10 @@ fun CollectorScreen(viewModel: CollectorViewModel, onCollectorClick: (Int) -> Un
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color(0xFFF0F2F6),
                 focusedContainerColor = Color(0xFFF0F2F6),
-                unfocusedIndicatorColor = Color(0xFFB4BAC7),
-                focusedIndicatorColor = Color(0xFF2B35BD),
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                focusedTextColor = Color(0xFF191B24),
+                unfocusedTextColor = Color(0xFF191B24),
                 cursorColor = Color(0xFF2B35BD)
             )
         )
@@ -166,7 +188,7 @@ fun CollectorScreen(viewModel: CollectorViewModel, onCollectorClick: (Int) -> Un
         Text(
             text = "CURATORS & ENTHUSIASTS",
             modifier = Modifier.padding(horizontal = 22.dp, vertical = 0.dp),
-            color = Color(0xFFB8BFCC),
+            color = ColorConstants.navUnselected,
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
             letterSpacing = 1.sp
@@ -189,8 +211,8 @@ fun CollectorScreen(viewModel: CollectorViewModel, onCollectorClick: (Int) -> Un
                 ) {
                     Icon(
                         imageVector = Icons.Default.Warning,
-                        contentDescription = null,
-                        tint = Color(0xFF888888),
+                        contentDescription = "Error al cargar coleccionistas",
+                        tint = ColorConstants.navUnselected,
                         modifier = Modifier.size(48.dp)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -201,7 +223,7 @@ fun CollectorScreen(viewModel: CollectorViewModel, onCollectorClick: (Int) -> Un
                         fontWeight = FontWeight.SemiBold
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = error ?: "", color = Color(0xFF888888), fontSize = 12.sp)
+                    Text(text = error ?: "", color = ColorConstants.navUnselected, fontSize = 12.sp)
                     Spacer(modifier = Modifier.height(20.dp))
                     Button(
                         onClick = { viewModel.loadCollectors() },
@@ -231,7 +253,7 @@ fun CollectorScreen(viewModel: CollectorViewModel, onCollectorClick: (Int) -> Un
                     Text(
                         text = if (searchQuery.isBlank()) "Intenta recargar la lista"
                         else "Prueba con otra busqueda",
-                        color = Color(0xFF888888),
+                        color = ColorConstants.navUnselected,
                         fontSize = 14.sp
                     )
                 }
