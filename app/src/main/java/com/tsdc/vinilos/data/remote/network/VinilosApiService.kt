@@ -3,6 +3,8 @@ import com.tsdc.vinilos.data.remote.dto.AlbumDto
 import com.tsdc.vinilos.data.remote.dto.ArtistDto
 import com.tsdc.vinilos.data.remote.dto.CollectorDto
 import com.tsdc.vinilos.data.remote.dto.CreateAlbumRequest
+import com.tsdc.vinilos.data.remote.dto.TrackDto
+import com.tsdc.vinilos.data.remote.dto.TrackRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -36,4 +38,15 @@ interface VinilosApiService {
     suspend fun getCollectorById(
         @Path("collectorId") collectorId: Int
     ): CollectorDto
+
+    @GET("albums/{albumId}/tracks")
+    suspend fun getAlbumTracks(
+        @Path("albumId") albumId: Int
+    ): List<TrackDto>
+
+    @POST("albums/{albumId}/tracks")
+    suspend fun addTrackToAlbum(
+        @Path("albumId") albumId: Int,
+        @Body track: TrackRequest
+    ): TrackDto
 }

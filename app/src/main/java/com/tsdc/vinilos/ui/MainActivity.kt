@@ -23,10 +23,13 @@ import com.tsdc.vinilos.ui.viewmodels.CollectorDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
 import com.tsdc.vinilos.ui.viewmodels.CreateAlbumViewModel
 
+
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppModule.init(this)
+
 
         setContent {
             VinilosTheme {

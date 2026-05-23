@@ -1,6 +1,7 @@
 package com.tsdc.vinilos
 
 import com.tsdc.vinilos.domain.models.NewAlbum
+import com.tsdc.vinilos.domain.models.Track
 import com.tsdc.vinilos.domain.repositories.AlbumRepository
 
 /**
@@ -65,4 +66,9 @@ class FakeAlbumRepository(
             recordLabel = newAlbum.recordLabel
         )
     }
+
+    override suspend fun getAlbumTracks(albumId: Int): List<Track> = emptyList()
+
+    override suspend fun addTrackToAlbum(albumId: Int, name: String, duration: String): Track =
+        Track(id = 0, name = name, duration = duration)
 }

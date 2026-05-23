@@ -7,6 +7,8 @@ import com.tsdc.vinilos.data.remote.dto.AlbumDto
 import com.tsdc.vinilos.data.remote.dto.ArtistDto
 import com.tsdc.vinilos.data.remote.dto.CollectorDto
 import com.tsdc.vinilos.data.remote.dto.CreateAlbumRequest
+import com.tsdc.vinilos.data.remote.dto.TrackDto
+import com.tsdc.vinilos.data.remote.dto.TrackRequest
 import com.tsdc.vinilos.data.remote.network.ServiceAdapter
 import com.tsdc.vinilos.data.remote.network.VinilosApiService
 import com.tsdc.vinilos.domain.models.Album
@@ -100,6 +102,12 @@ private class FakeVinilosApiServiceForArtists(
     }
 
     override suspend fun createAlbum(body: CreateAlbumRequest): AlbumDto {
+        error("no usado en test de artistas")
+    }
+
+    override suspend fun getAlbumTracks(albumId: Int): List<TrackDto> = emptyList()
+
+    override suspend fun addTrackToAlbum(albumId: Int, track: TrackRequest): TrackDto {
         error("no usado en test de artistas")
     }
 }

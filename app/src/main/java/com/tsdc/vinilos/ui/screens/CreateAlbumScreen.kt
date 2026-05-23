@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tsdc.vinilos.domain.models.Album
 import com.tsdc.vinilos.domain.models.NewAlbum
+import com.tsdc.vinilos.domain.models.Track
 import com.tsdc.vinilos.domain.repositories.AlbumRepository
 import com.tsdc.vinilos.domain.usecases.CreateAlbumUseCase
 import com.tsdc.vinilos.ui.shared.components.VinilosNavBar
@@ -387,6 +388,9 @@ private object PreviewCreateAlbumRepository : AlbumRepository {
         genre = newAlbum.genre,
         recordLabel = newAlbum.recordLabel
     )
+    override suspend fun getAlbumTracks(albumId: Int): List<Track> = emptyList()
+    override suspend fun addTrackToAlbum(albumId: Int, name: String, duration: String): Track =
+        Track(id = 0, name = name, duration = duration)
 }
 
 @Preview(showBackground = true, showSystemUi = true)

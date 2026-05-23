@@ -7,6 +7,7 @@ import com.tsdc.vinilos.data.mappers.toEntity
 import com.tsdc.vinilos.data.remote.network.ServiceAdapter
 import com.tsdc.vinilos.domain.models.Album
 import com.tsdc.vinilos.domain.models.NewAlbum
+import com.tsdc.vinilos.domain.models.Track
 import com.tsdc.vinilos.domain.repositories.AlbumRepository as AlbumRepositoryInterface
 
 class AlbumRepository(
@@ -39,4 +40,10 @@ class AlbumRepository(
         albumDao.insert(created.toEntity())
         return created
     }
+
+    override suspend fun getAlbumTracks(albumId: Int): List<Track> =
+        serviceAdapter.fetchAlbumTracks(albumId)
+
+    override suspend fun addTrackToAlbum(albumId: Int, name: String, duration: String): Track =
+        serviceAdapter.addTrackToAlbum(albumId, name, duration)
 }
