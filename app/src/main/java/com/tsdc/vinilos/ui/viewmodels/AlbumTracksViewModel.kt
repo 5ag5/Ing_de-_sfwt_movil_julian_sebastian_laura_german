@@ -36,6 +36,7 @@ class AlbumTracksViewModel(
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
+            _tracks.value = emptyList()
             try {
                 _album.value = getAlbumByIdUseCase(albumId)
                 _tracks.value = getAlbumTracksUseCase(albumId)
@@ -60,6 +61,8 @@ class AlbumTracksViewModel(
             }
         }
     }
+
+    fun refresh(albumId: Int) = load(albumId)
 
     fun addTrack(albumId: Int, name: String, duration: String) {
         viewModelScope.launch {

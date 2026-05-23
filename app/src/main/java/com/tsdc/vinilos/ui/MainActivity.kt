@@ -3,6 +3,7 @@ package com.tsdc.vinilos.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,6 +22,7 @@ import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
 import com.tsdc.vinilos.ui.viewmodels.ArtistDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
 import com.tsdc.vinilos.ui.viewmodels.CollectorDetailViewModel
+import com.tsdc.vinilos.ui.viewmodels.AlbumTracksViewModel
 import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
 import com.tsdc.vinilos.ui.viewmodels.CreateAlbumViewModel
 
@@ -175,11 +177,16 @@ class MainActivity : ComponentActivity() {
                         arguments = listOf(navArgument("albumId") { type = NavType.IntType })
                     ) { backStackEntry ->
                         val albumId = backStackEntry.arguments?.getInt("albumId") ?: -1
+                        val tracksViewModel: AlbumTracksViewModel = viewModel(
+                            viewModelStoreOwner = backStackEntry,
+                            factory = AppModule.albumTracksViewModelFactory
+                        )
                         AlbumTracksScreen(
-                            viewModel = AppModule.albumTracksViewModel,
+                            viewModel = tracksViewModel,
                             albumId = albumId,
                             onBack = { navController.popBackStack() },
                             onSaveTracklist = {
+                                viewModel.loadAlbums()
                                 navController.navigate("home_albums") {
                                     popUpTo("home") { inclusive = true }
                                 }
