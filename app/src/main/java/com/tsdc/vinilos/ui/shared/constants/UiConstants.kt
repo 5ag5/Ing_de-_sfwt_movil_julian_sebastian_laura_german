@@ -69,10 +69,8 @@ object ColorConstants {
     val borderGray = Color(0xFFE1E4F2)
     val textLight = Color(0xFF4D4D4D)
 
-    /** Ítems de barra inferior no seleccionados: ≥4.5:1 sobre blanco y lightBlue (accesibilidad). */
     val navUnselected = Color(0xFF5C5F66)
 
-    /** Acento dorado legible sobre fondos claros (#F7F7FA, blanco). */
     val accentGoldAccessible = Color(0xFF7A5200)
 
     // Semantic

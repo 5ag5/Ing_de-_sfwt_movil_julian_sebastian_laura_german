@@ -259,7 +259,6 @@ private fun ShimmerAlbumItem() {
         ),
         label = "shimmer_alpha"
     )
-    // Gris más oscuro para cumplir contraste ≥4.5:1 sobre fondo blanco del ítem.
     val shimmerColor = Color(0xFF9E9E9E).copy(alpha = alpha.coerceIn(0.55f, 1f))
 
     Card(

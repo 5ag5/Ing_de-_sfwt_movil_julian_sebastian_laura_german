@@ -14,7 +14,6 @@ val GoldAccent = Color(0xFFF5A623)
 val BackgroundGray = Color(0xFFF2F2F6)
 val SurfaceWhite = Color(0xFFFFFFFF)
 val TextDark = Color(0xFF1A1A2E)
-/** Texto secundario; cumple contraste ≥4.5:1 sobre fondos claros. */
 val TextMuted = Color(0xFF5C5F66)
 val BorderLight = Color(0xFFE5E5EA)
 
