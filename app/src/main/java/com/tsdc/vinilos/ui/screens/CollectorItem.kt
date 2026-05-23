@@ -20,12 +20,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.tsdc.vinilos.domain.models.Collector
+import com.tsdc.vinilos.ui.shared.constants.ColorConstants
 import com.tsdc.vinilos.ui.shared.constants.UiTestTags
 
 @Preview(showBackground = true)
@@ -42,15 +45,22 @@ fun CollectorItemPreview() {
     )
 }
 
+private fun collectorItemContentDescription(collector: Collector): String =
+    "Coleccionista ${collector.name}, ${collector.albumCount} álbumes"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectorItem(collector: Collector, onClick: () -> Unit = {}) {
+    val accessibilityLabel = collectorItemContentDescription(collector)
     Card(
         onClick = onClick,
         modifier = Modifier
             .testTag(UiTestTags.COLLECTOR_LIST_ITEM)
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .semantics(mergeDescendants = true) {
+                contentDescription = accessibilityLabel
+            },
         shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -75,7 +85,7 @@ fun CollectorItem(collector: Collector, onClick: () -> Unit = {}) {
                 ) {
                     AsyncImage(
                         model = "",
-                        contentDescription = collector.name,
+                        contentDescription = null,
                         modifier = Modifier
                             .size(56.dp)
                             .clip(CircleShape),
@@ -97,7 +107,7 @@ fun CollectorItem(collector: Collector, onClick: () -> Unit = {}) {
                     Text(
                         text = "Coleccionista",
                         fontSize = 12.sp,
-                        color = Color(0xFF888888),
+                        color = ColorConstants.navUnselected,
                         fontWeight = FontWeight.Medium
                     )
                 }

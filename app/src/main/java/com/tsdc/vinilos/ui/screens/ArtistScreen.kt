@@ -53,6 +53,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tsdc.vinilos.di.AppModule
+import com.tsdc.vinilos.ui.shared.constants.ColorConstants
 import com.tsdc.vinilos.ui.shared.constants.UiTestTags
 import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
 import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
@@ -125,13 +126,13 @@ fun ArtistScreen(viewModel: ArtistViewModel, onArtistClick: (Int) -> Unit = {}) 
                 .padding(horizontal = 20.dp, vertical = 10.dp)
                 .testTag(UiTestTags.ARTIST_SEARCH_FIELD),
             placeholder = {
-                Text("Search artists...", color = Color(0xFFA0A7B5), fontSize = 15.sp)
+                Text("Search artists...", color = ColorConstants.navUnselected, fontSize = 15.sp)
             },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = null,
-                    tint = Color(0xFFA0A7B5)
+                    tint = ColorConstants.navUnselected
                 )
             },
             singleLine = true,
@@ -173,7 +174,7 @@ fun ArtistScreen(viewModel: ArtistViewModel, onArtistClick: (Int) -> Unit = {}) 
         Text(
             text = "FEATURED ARTISTS",
             modifier = Modifier.padding(horizontal = 22.dp, vertical = 12.dp),
-            color = Color(0xFFB8BFCC),
+            color = ColorConstants.navUnselected,
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = 1.2.sp
@@ -194,8 +195,8 @@ fun ArtistScreen(viewModel: ArtistViewModel, onArtistClick: (Int) -> Unit = {}) 
                 ) {
                     Icon(
                         imageVector = Icons.Default.Warning,
-                        contentDescription = null,
-                        tint = Color(0xFF888888),
+                        contentDescription = "Error al cargar artistas",
+                        tint = ColorConstants.navUnselected,
                         modifier = Modifier.size(48.dp)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -206,7 +207,7 @@ fun ArtistScreen(viewModel: ArtistViewModel, onArtistClick: (Int) -> Unit = {}) 
                         fontWeight = FontWeight.SemiBold
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = error ?: "", color = Color(0xFF888888), fontSize = 12.sp)
+                    Text(text = error ?: "", color = ColorConstants.navUnselected, fontSize = 12.sp)
                     Spacer(modifier = Modifier.height(20.dp))
                     Button(
                         onClick = { viewModel.loadArtists() },
@@ -236,7 +237,7 @@ fun ArtistScreen(viewModel: ArtistViewModel, onArtistClick: (Int) -> Unit = {}) 
                     Text(
                         text = if (searchQuery.isBlank()) "Intenta recargar la lista"
                         else "Prueba con otra busqueda",
-                        color = Color(0xFF888888),
+                        color = ColorConstants.navUnselected,
                         fontSize = 14.sp
                     )
                 }

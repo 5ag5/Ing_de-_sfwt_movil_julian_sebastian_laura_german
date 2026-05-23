@@ -17,12 +17,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.tsdc.vinilos.domain.models.Artist
+import com.tsdc.vinilos.ui.shared.constants.ColorConstants
 import com.tsdc.vinilos.ui.shared.constants.UiTestTags
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -43,13 +46,21 @@ fun ArtistItemPreview() {
     )
 }
 
+private fun artistItemContentDescription(artist: Artist, year: String): String =
+    "Artista ${artist.name}, año de nacimiento $year"
+
 @Composable
 fun ArtistItem(artist: Artist, onClick: () -> Unit = {}) {
+    val year = artist.birthDate.toArtistBadge()
+    val accessibilityLabel = artistItemContentDescription(artist, year)
     Card(
         modifier = Modifier
             .testTag(UiTestTags.ARTIST_LIST_ITEM)
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
+            .semantics(mergeDescendants = true) {
+                contentDescription = accessibilityLabel
+            }
             .clickable { onClick() },
         shape = androidx.compose.foundation.shape.RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF7F7FA)),
@@ -63,7 +74,7 @@ fun ArtistItem(artist: Artist, onClick: () -> Unit = {}) {
         ) {
             AsyncImage(
                 model = artist.image,
-                contentDescription = artist.name,
+                contentDescription = null,
                 modifier = Modifier
                     .size(54.dp)
                     .clip(CircleShape),
@@ -87,17 +98,17 @@ fun ArtistItem(artist: Artist, onClick: () -> Unit = {}) {
                         .take(36)
                         .let { if (artist.description.length > 36) "$it..." else it },
                     fontSize = 12.sp,
-                    color = Color(0xFF8C93A3),
+                    color = ColorConstants.navUnselected,
                     fontWeight = FontWeight.Medium,
                     maxLines = 1
                 )
             }
 
             Text(
-                text = artist.birthDate.toArtistBadge(),
+                text = year,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFFE0A126)
+                color = ColorConstants.accentGoldAccessible
             )
         }
     }

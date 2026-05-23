@@ -24,6 +24,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -103,7 +106,9 @@ private fun AlbumDetailContent(
             fontSize = 26.sp,
             fontWeight = FontWeight.ExtraBold,
             color = Color(0xFF1A1A2E),
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .semantics { heading() }
         )
 
         if (isLoading) {
@@ -138,23 +143,29 @@ private fun AlbumDetailContent(
             recordLabel = "-"
         )
 
-        AsyncImage(
-            model = currentAlbum.cover,
-            contentDescription = currentAlbum.name,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1.4f)
-                .clip(RoundedCornerShape(16.dp))
-        )
+        Column(
+            modifier = Modifier.semantics(mergeDescendants = true) {
+                contentDescription = "Álbum ${currentAlbum.name}"
+            }
+        ) {
+            AsyncImage(
+                model = currentAlbum.cover,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1.4f)
+                    .clip(RoundedCornerShape(16.dp))
+            )
 
-        Text(
-            text = currentAlbum.name,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = Color(0xFF1A1A2E),
-            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-        )
+            Text(
+                text = currentAlbum.name,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color(0xFF1A1A2E),
+                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+            )
+        }
 
         Card(
             shape = RoundedCornerShape(12.dp),

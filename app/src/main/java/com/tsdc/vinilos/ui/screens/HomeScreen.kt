@@ -15,7 +15,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,11 +26,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tsdc.vinilos.di.AppModule
+import com.tsdc.vinilos.ui.shared.components.vinilosNavigationBarItemColors
+import com.tsdc.vinilos.ui.shared.constants.ColorConstants
+import com.tsdc.vinilos.ui.shared.constants.TextSizeConstants
 import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
 import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
 import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
@@ -97,30 +102,33 @@ fun HomeScreen(
                         3 -> Modifier.testTag("nav_collectors")
                         else -> Modifier
                     }
+                    val isSelected = selectedIndex == index
+                    val navContentColor = if (isSelected) {
+                        ColorConstants.primaryBlue
+                    } else {
+                        ColorConstants.navUnselected
+                    }
                     NavigationBarItem(
                         modifier = navModifier,
-                        selected = selectedIndex == index,
+                        selected = isSelected,
                         onClick = { selectedIndex = index },
                         icon = {
                             Icon(
                                 imageVector = navIcons[index],
-                                contentDescription = label
+                                contentDescription = null,
+                                tint = navContentColor
                             )
                         },
                         label = {
                             Text(
                                 text = label.uppercase(),
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold
+                                fontSize = TextSizeConstants.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = navContentColor
                             )
                         },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Color(0xFF2B35BD),
-                            selectedTextColor = Color(0xFF2B35BD),
-                            indicatorColor = Color(0xFFE8EAFF),
-                            unselectedIconColor = Color(0xFF888888),
-                            unselectedTextColor = Color(0xFF888888)
-                        )
+                        alwaysShowLabel = true,
+                        colors = vinilosNavigationBarItemColors()
                     )
                 }
             }
@@ -148,12 +156,21 @@ fun HomeScreen(
 
 @Composable
 private fun WelcomeScreen() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    val welcomeMessage = "Bienvenido a Vinilos"
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .semantics(mergeDescendants = true) {
+                contentDescription = welcomeMessage
+                heading()
+            },
+        contentAlignment = Alignment.Center
+    ) {
         Text(
-            text = "Bienvenido a Vinilos",
+            text = welcomeMessage,
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1A1A2E)
+            color = ColorConstants.darkGray
         )
     }
 }
@@ -165,7 +182,7 @@ private fun PlaceholderScreen(name: String) {
             text = "$name\nProximamente",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF888888)
+            color = ColorConstants.navUnselected
         )
     }
 }
