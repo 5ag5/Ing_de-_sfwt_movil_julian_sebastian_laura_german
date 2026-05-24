@@ -27,7 +27,67 @@ cd <NOMBRE_DEL_PROYECTO>
 
 ## 2. Configurar Java para Android
 
-Si Gradle falla por problemas de Java, usar temporalmente el JBR de Android Studio:
+Este proyecto no fija `org.gradle.java.home` en el repositorio para evitar rutas locales que rompan en otros equipos.
+
+Cada desarrollador debe configurar su JDK de Gradle en su maquina (recomendado JDK 17 o 21).
+
+### Opcion A (recomendada): Android Studio
+
+```txt
+File > Settings > Build, Execution, Deployment > Build Tools > Gradle > Gradle JDK
+```
+
+En `Gradle JDK`, seleccionar una de estas opciones:
+
+```txt
+1) Embedded JDK (recomendado)
+2) JDK 21 (si lo tienes instalado)
+3) JDK 17 (si lo tienes instalado)
+```
+
+No usar JDK 25 para este proyecto.
+
+Luego aplicar cambios y sincronizar:
+
+```txt
+Apply > OK > Sync Project with Gradle Files
+```
+
+### Opcion B: gradle.properties local del usuario
+
+Crear o editar:
+
+```txt
+C:/Users/<TU_USUARIO>/.gradle/gradle.properties
+```
+
+Agregar:
+
+```properties
+org.gradle.java.home=C:/Program Files/Android/Android Studio/jbr
+```
+
+Comandos sugeridos (PowerShell, Windows):
+
+```powershell
+New-Item -ItemType Directory -Force "$env:USERPROFILE/.gradle" | Out-Null
+@"
+org.gradle.java.home=C:/Program Files/Android/Android Studio/jbr
+"@ | Set-Content -Path "$env:USERPROFILE/.gradle/gradle.properties"
+Get-Content "$env:USERPROFILE/.gradle/gradle.properties"
+```
+
+Comandos sugeridos (Git Bash, Windows):
+
+```bash
+mkdir -p ~/.gradle
+cat > ~/.gradle/gradle.properties << 'EOF'
+org.gradle.java.home=C:/Program Files/Android/Android Studio/jbr
+EOF
+cat ~/.gradle/gradle.properties
+```
+
+### Opcion C: solo para la terminal actual (temporal)
 
 ```powershell
 $env:JAVA_HOME="C:\Program Files\Android\Android Studio\jbr"
@@ -37,16 +97,27 @@ java -version
 
 Esta configuración es temporal y solo afecta la terminal actual.
 
-También se puede configurar desde Android Studio:
+Comandos sugeridos (Git Bash):
 
-```txt
-File > Settings > Build, Execution, Deployment > Build Tools > Gradle > Gradle JDK
+```bash
+export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"
+export PATH="$JAVA_HOME/bin:$PATH"
+java -version
 ```
 
-Seleccionar:
+Verificar con:
 
-```txt
-Embedded JDK / jbr
+```bash
+./gradlew -version
+```
+
+La JVM debe mostrar Java 17 o 21.
+
+Validaciones utiles:
+
+```bash
+java -version
+./gradlew -version
 ```
 
 ---
@@ -123,7 +194,39 @@ No usar `localhost` dentro de la app Android cuando se ejecuta en emulador, porq
 
 ---
 
-## 5. Ejecutar la app Android
+## 5. Flavors y variantes de build
+
+Este proyecto usa flavors para definir entorno y origen de datos.
+
+### Flavors disponibles
+
+- `local`: usa `BASE_URL = http://10.0.2.2:3000/` y `USE_FAKE_DATA = false`
+- `prod`: usa backend productivo y `USE_FAKE_DATA = false`
+- `robo`: usa `USE_FAKE_DATA = true` (repositorios fake, sin consumo de backend)
+
+### Variantes resultantes
+
+- `localDebug` / `localRelease`
+- `prodDebug` / `prodRelease`
+- `roboDebug` / `roboRelease`
+
+Comandos recomendados de ensamblado:
+
+```bash
+./gradlew app:assembleLocalDebug
+./gradlew app:assembleProdDebug
+./gradlew app:assembleRoboDebug
+```
+
+APK esperado para Robo Test:
+
+```txt
+app/build/outputs/apk/robo/debug/app-robo-debug.apk
+```
+
+---
+
+## 6. Ejecutar la app Android
 
 Abrir el proyecto Android en Android Studio:
 
@@ -145,17 +248,21 @@ Debe aparecer algo como:
 emulator-5554    device
 ```
 
-Instalar la app desde terminal:
+Instalar la variante que quieras probar desde terminal:
 
 ```powershell
-.\gradlew.bat installDebug
+.\gradlew.bat app:installLocalDebug
+.\gradlew.bat app:installProdDebug
+.\gradlew.bat app:installRoboDebug
 ```
 
 O ejecutarla desde Android Studio usando el botón verde Run.
 
+Importante: en Android Studio selecciona la variante correcta en `Build Variants` antes de ejecutar.
+
 ---
 
-## 6. Probar la conexión desde el emulador
+## 7. Probar la conexión desde el emulador
 
 Abrir Chrome en el emulador y probar:
 
@@ -165,9 +272,11 @@ http://10.0.2.2:3000/albums
 
 Si aparece el JSON de álbumes, la app Android puede comunicarse con el backend.
 
+Nota: esta validación aplica para `local` y `prod`. En `robo` la app usa datos fake y no requiere backend.
+
 ---
 
-## 7. Ejecutar pruebas unitarias Android
+## 8. Ejecutar pruebas unitarias Android
 
 Las pruebas unitarias locales están en:
 
@@ -178,12 +287,14 @@ app/src/test/java
 Para ejecutarlas:
 
 ```powershell
-.\gradlew.bat testDebugUnitTest
+.\gradlew.bat testLocalDebugUnitTest
+.\gradlew.bat testProdDebugUnitTest
+.\gradlew.bat testRoboDebugUnitTest
 ```
 
 ---
 
-## 8. Ejecutar pruebas instrumentadas / Espresso
+## 9. Ejecutar pruebas instrumentadas / Espresso
 
 Las pruebas Espresso están en:
 
@@ -194,7 +305,9 @@ app/src/androidTest/java
 Con el emulador encendido, ejecutar:
 
 ```powershell
-.\gradlew.bat app:connectedDebugAndroidTest
+.\gradlew.bat app:connectedLocalDebugAndroidTest
+.\gradlew.bat app:connectedProdDebugAndroidTest
+.\gradlew.bat app:connectedRoboDebugAndroidTest
 ```
 
 Si hay problemas de Java, usar primero:
@@ -206,7 +319,7 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 ---
 
-## 9. Problemas comunes
+## 10. Problemas comunes
 
 ### Error: `nest is not recognized`
 
@@ -259,16 +372,25 @@ Dentro de `<application>`:
 android:usesCleartextTraffic="true"
 ```
 
+### Ejecuté el flavor incorrecto
+
+Si no aparecen datos esperados, verifica la variante activa:
+
+- `local`: requiere backend local arriba
+- `prod`: consulta backend productivo
+- `robo`: usa datos fake (sin backend)
+
 ---
 
-## 10. Flujo recomendado de ejecución
+## 11. Flujo recomendado de ejecución
 
 1. Levantar PostgreSQL.
 2. Ejecutar backend NestJS.
 3. Verificar endpoint en Postman.
 4. Encender emulador Android.
-5. Ejecutar app Android.
-6. Probar pruebas unitarias o Espresso si aplica.
+5. Elegir flavor (`local`, `prod` o `robo`).
+6. Ejecutar app Android con la variante elegida.
+7. Probar pruebas unitarias o Espresso si aplica.
 
 ```bash
 docker start postgres-vinyls
@@ -279,7 +401,13 @@ npm run start:dev
 Luego en Android:
 
 ```powershell
-.\gradlew.bat installDebug
+.\gradlew.bat app:installLocalDebug
+```
+
+Para Robo Test / Firebase Test Lab:
+
+```powershell
+.\gradlew.bat app:assembleRoboDebug
 ```
 
 ---

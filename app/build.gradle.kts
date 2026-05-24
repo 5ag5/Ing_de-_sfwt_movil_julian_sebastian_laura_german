@@ -20,7 +20,39 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
+
+     flavorDimensions += "environment"
+
+    productFlavors {
+        create("local") {
+            dimension = "environment"
+            applicationIdSuffix = ".local"
+            versionNameSuffix = "-local"
+
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:3000/\"")
+            buildConfigField("Boolean", "USE_FAKE_DATA", "false")
+        }
+
+        create("prod") {
+            dimension = "environment"
+            versionNameSuffix = "-prod"
+
+            buildConfigField("String", "BASE_URL", "\"https://backvynils-production-5c50.up.railway.app/\"")
+            buildConfigField("Boolean", "USE_FAKE_DATA", "false")
+        }
+
+        create("robo") {
+            dimension = "environment"
+            applicationIdSuffix = ".robo"
+            versionNameSuffix = "-robo"
+
+            buildConfigField("String", "BASE_URL", "\"https://unused-for-robo.local/\"")
+            buildConfigField("Boolean", "USE_FAKE_DATA", "true")
+        }
+    }
+
     
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
