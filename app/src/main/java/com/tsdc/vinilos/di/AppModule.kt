@@ -2,11 +2,15 @@ package com.tsdc.vinilos.di
 
 import android.content.Context
 import com.tsdc.vinilos.data.local.AppDatabase
+import com.tsdc.vinilos.BuildConfig
 import com.tsdc.vinilos.data.remote.network.ServiceAdapter
 import com.tsdc.vinilos.data.remote.network.VinilosApiService
 import com.tsdc.vinilos.data.repositories.ArtistRepository as ArtistRepositoryImpl
 import com.tsdc.vinilos.data.repositories.AlbumRepository as AlbumRepositoryImpl
 import com.tsdc.vinilos.data.repositories.CollectorRepository as CollectorRepositoryImpl
+import com.tsdc.vinilos.data.repositories.fake.FakeAlbumRepository
+import com.tsdc.vinilos.data.repositories.fake.FakeArtistRepository
+import com.tsdc.vinilos.data.repositories.fake.FakeCollectorRepository
 import com.tsdc.vinilos.domain.repositories.AlbumRepository
 import com.tsdc.vinilos.domain.repositories.ArtistRepository
 import com.tsdc.vinilos.domain.repositories.CollectorRepository
@@ -21,12 +25,11 @@ import com.tsdc.vinilos.domain.usecases.GetCollectorByIdUseCase
 import com.tsdc.vinilos.domain.usecases.GetCollectorsUseCase
 import com.tsdc.vinilos.domain.usecases.IsFavoriteArtistUseCase
 import com.tsdc.vinilos.domain.usecases.ToggleFavoriteArtistUseCase
+import com.tsdc.vinilos.ui.viewmodels.AlbumTracksViewModelFactory
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object AppModule {
-
-    private const val BASE_URL = "https://backvynils-production-5c50.up.railway.app/"
 
     private lateinit var appContext: Context
 
@@ -36,7 +39,7 @@ object AppModule {
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
@@ -54,7 +57,11 @@ object AppModule {
     }
 
     val albumRepository: AlbumRepository by lazy {
-        AlbumRepositoryImpl(serviceAdapter, database.albumDao())
+        if (BuildConfig.USE_FAKE_DATA) {
+            FakeAlbumRepository()
+        } else {
+            AlbumRepositoryImpl(serviceAdapter, database.albumDao())
+        }
     }
 
     val getAlbumsUseCase: GetAlbumsUseCase by lazy {
@@ -77,8 +84,8 @@ object AppModule {
         AddTrackToAlbumUseCase(albumRepository)
     }
 
-    val albumTracksViewModelFactory: com.tsdc.vinilos.ui.viewmodels.AlbumTracksViewModelFactory by lazy {
-        com.tsdc.vinilos.ui.viewmodels.AlbumTracksViewModelFactory(
+    val albumTracksViewModelFactory: AlbumTracksViewModelFactory by lazy {
+        AlbumTracksViewModelFactory(
             getAlbumTracksUseCase,
             addTrackToAlbumUseCase,
             getAlbumByIdUseCase
@@ -86,7 +93,11 @@ object AppModule {
     }
 
     val artistRepository: ArtistRepository by lazy {
-        ArtistRepositoryImpl(serviceAdapter, database.favoriteArtistDao(), database.artistDao())
+        if (BuildConfig.USE_FAKE_DATA) {
+            FakeArtistRepository()
+        } else {
+            ArtistRepositoryImpl(serviceAdapter, database.favoriteArtistDao(), database.artistDao())
+        }
     }
 
     val getArtistsUseCase: GetArtistsUseCase by lazy {
@@ -106,7 +117,11 @@ object AppModule {
     }
 
     val collectorRepository: CollectorRepository by lazy {
-        CollectorRepositoryImpl(serviceAdapter, database.collectorDao())
+        if (BuildConfig.USE_FAKE_DATA) {
+            FakeCollectorRepository()
+        } else {
+            CollectorRepositoryImpl(serviceAdapter, database.collectorDao())
+        }
     }
 
     val getCollectorsUseCase: GetCollectorsUseCase by lazy {
