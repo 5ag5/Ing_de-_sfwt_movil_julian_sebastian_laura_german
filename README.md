@@ -292,11 +292,11 @@ Luego en Android:
 * Mantener el backend corriendo antes de probar la app móvil.
 
 ---
-## APK hubicacion y Release
+## APK ubicación y Release
 
 
 * El APK de la aplicacion se encuentra en la rama principal que es la rama main.
-* La ruta exacta del APK esta en: deliverables/apk/app-v0.apk
+* La ruta exacta del APK esta en: deliverables/apk/app-v0.apk Sprint 1, deliverables/apk/app-v1.apk Sprint 2
 * El release Sprint 1, incluye una actalizacion de .gitignore para que incluya los archivos APK files, el app-v0.apk en deliverables y tambien el source code.
 
 
