@@ -12,8 +12,14 @@ interface CollectorDao {
     @Query("SELECT * FROM collectors")
     suspend fun getAllCollectors(): List<CollectorEntity>
 
+    @Query("SELECT * FROM collectors WHERE id = :id LIMIT 1")
+    suspend fun getCollectorById(id: Int): CollectorEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCollectors(items: List<CollectorEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(collector: CollectorEntity)
 
     @Query("DELETE FROM collectors")
     suspend fun deleteAll()

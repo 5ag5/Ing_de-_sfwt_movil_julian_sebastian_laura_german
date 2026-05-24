@@ -39,8 +39,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.invisibleToUser
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.tsdc.vinilos.di.AppModule
+import com.tsdc.vinilos.ui.shared.constants.ColorConstants
 import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
 import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
 import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
@@ -103,7 +108,7 @@ fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
                 )
                 Text(
                     text = "The Analog Curator",
-                    color = Color.White.copy(alpha = 0.7f),
+                    color = Color.White.copy(alpha = 0.85f),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal
                 )
@@ -118,13 +123,17 @@ fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             placeholder = {
-                Text("Buscar álbumes...", color = Color(0xFF888888), fontSize = 15.sp)
+                Text(
+                    "Buscar álbumes...",
+                    color = ColorConstants.navUnselected,
+                    fontSize = 15.sp
+                )
             },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = null,
-                    tint = Color(0xFF888888)
+                    tint = ColorConstants.navUnselected
                 )
             },
             shape = RoundedCornerShape(12.dp),
@@ -150,7 +159,11 @@ fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
 
         when {
             isLoading -> {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .semantics { contentDescription = "Cargando lista de álbumes" }
+                ) {
                     items(6) { ShimmerAlbumItem() }
                 }
             }
@@ -163,19 +176,23 @@ fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
                 ) {
                     Icon(
                         imageVector = Icons.Default.Warning,
-                        contentDescription = null,
-                        tint = Color(0xFF888888),
+                        contentDescription = "Error al cargar álbumes",
+                        tint = ColorConstants.navUnselected,
                         modifier = Modifier.size(48.dp)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "No se pudieron cargar los álbumes",
-                        color = Color(0xFF1A1A2E),
+                        color = ColorConstants.darkGray,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = error ?: "", color = Color(0xFF888888), fontSize = 12.sp)
+                    Text(
+                        text = error ?: "",
+                        color = ColorConstants.navUnselected,
+                        fontSize = 12.sp
+                    )
                     Spacer(modifier = Modifier.height(20.dp))
                     Button(
                         onClick = { viewModel.loadAlbums() },
@@ -205,7 +222,7 @@ fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
                     Text(
                         text = if (searchQuery.isBlank()) "Usa el botón + para agregar un álbum"
                                else "Intenta con otra búsqueda",
-                        color = Color(0xFF888888),
+                        color = ColorConstants.navUnselected,
                         fontSize = 14.sp
                     )
                 }
@@ -229,6 +246,7 @@ fun AlbumScreen(viewModel: AlbumViewModel, onAlbumClick: (Int) -> Unit) {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ShimmerAlbumItem() {
     val infiniteTransition = rememberInfiniteTransition(label = "shimmer")
@@ -241,12 +259,13 @@ private fun ShimmerAlbumItem() {
         ),
         label = "shimmer_alpha"
     )
-    val shimmerColor = Color(0xFFE5E5EA).copy(alpha = alpha)
+    val shimmerColor = Color(0xFF9E9E9E).copy(alpha = alpha.coerceIn(0.55f, 1f))
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .semantics { invisibleToUser() },
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,12 +20,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.tsdc.vinilos.domain.models.Collector
+import com.tsdc.vinilos.ui.shared.constants.ColorConstants
 import com.tsdc.vinilos.ui.shared.constants.UiTestTags
 
 @Preview(showBackground = true)
@@ -35,19 +39,28 @@ fun CollectorItemPreview() {
             id = 1,
             name = "Mateo Rivera",
             telephone = "3001112233",
-            email = "mateo@mail.com"
-        ),
-        albumCount = 142
+            email = "mateo@mail.com",
+            albumCount = 142
+        )
     )
 }
 
+private fun collectorItemContentDescription(collector: Collector): String =
+    "Coleccionista ${collector.name}, ${collector.albumCount} álbumes"
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CollectorItem(collector: Collector, albumCount: Int = 0) {
+fun CollectorItem(collector: Collector, onClick: () -> Unit = {}) {
+    val accessibilityLabel = collectorItemContentDescription(collector)
     Card(
+        onClick = onClick,
         modifier = Modifier
             .testTag(UiTestTags.COLLECTOR_LIST_ITEM)
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .semantics(mergeDescendants = true) {
+                contentDescription = accessibilityLabel
+            },
         shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -72,7 +85,7 @@ fun CollectorItem(collector: Collector, albumCount: Int = 0) {
                 ) {
                     AsyncImage(
                         model = "",
-                        contentDescription = collector.name,
+                        contentDescription = null,
                         modifier = Modifier
                             .size(56.dp)
                             .clip(CircleShape),
@@ -94,14 +107,14 @@ fun CollectorItem(collector: Collector, albumCount: Int = 0) {
                     Text(
                         text = "Coleccionista",
                         fontSize = 12.sp,
-                        color = Color(0xFF888888),
+                        color = ColorConstants.navUnselected,
                         fontWeight = FontWeight.Medium
                     )
                 }
             }
 
             Text(
-                text = albumCount.toString(),
+                text = collector.albumCount.toString(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF2B35BD)

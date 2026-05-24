@@ -3,6 +3,7 @@ package com.tsdc.vinilos.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,19 +11,28 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tsdc.vinilos.di.AppModule
 import com.tsdc.vinilos.ui.screens.AlbumDetailScreen
+import com.tsdc.vinilos.ui.screens.AlbumTracksScreen
 import com.tsdc.vinilos.ui.screens.ArtistDetailScreen
+import com.tsdc.vinilos.ui.screens.CollectorDetailScreen
+import com.tsdc.vinilos.ui.screens.CreateAlbumScreen
 import com.tsdc.vinilos.ui.screens.HomeScreen
 import com.tsdc.vinilos.ui.shared.theme.VinilosTheme
 import com.tsdc.vinilos.ui.viewmodels.AlbumDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.AlbumViewModel
 import com.tsdc.vinilos.ui.viewmodels.ArtistDetailViewModel
 import com.tsdc.vinilos.ui.viewmodels.ArtistViewModel
+import com.tsdc.vinilos.ui.viewmodels.CollectorDetailViewModel
+import com.tsdc.vinilos.ui.viewmodels.AlbumTracksViewModel
 import com.tsdc.vinilos.ui.viewmodels.CollectorViewModel
+import com.tsdc.vinilos.ui.viewmodels.CreateAlbumViewModel
+
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppModule.init(this)
+
 
         setContent {
             VinilosTheme {
@@ -35,6 +45,8 @@ class MainActivity : ComponentActivity() {
                     AppModule.toggleFavoriteArtistUseCase,
                     AppModule.isFavoriteArtistUseCase
                 )
+                val createAlbumViewModel = CreateAlbumViewModel(AppModule.createAlbumUseCase)
+                val collectorDetailViewModel = CollectorDetailViewModel(AppModule.getCollectorByIdUseCase)
                 val navController = rememberNavController()
 
                 NavHost(navController = navController, startDestination = "home") {
@@ -43,11 +55,17 @@ class MainActivity : ComponentActivity() {
                             albumViewModel = viewModel,
                             artistViewModel = artistViewModel,
                             collectorViewModel = collectorViewModel,
+                            onCreateAlbumClick = {
+                                navController.navigate("create_album")
+                            },
                             onAlbumClick = { albumId ->
                                 navController.navigate("album_detail/$albumId")
                             },
                             onArtistClick = { artistId ->
                                 navController.navigate("artist_detail/$artistId")
+                            },
+                            onCollectorClick = { collectorId ->
+                                navController.navigate("collector_detail/$collectorId")
                             }
                         )
                     }
@@ -57,11 +75,17 @@ class MainActivity : ComponentActivity() {
                             artistViewModel = artistViewModel,
                             collectorViewModel = collectorViewModel,
                             initialTab = 1,
+                            onCreateAlbumClick = {
+                                navController.navigate("create_album")
+                            },
                             onAlbumClick = { albumId ->
                                 navController.navigate("album_detail/$albumId")
                             },
                             onArtistClick = { artistId ->
                                 navController.navigate("artist_detail/$artistId")
+                            },
+                            onCollectorClick = { collectorId ->
+                                navController.navigate("collector_detail/$collectorId")
                             }
                         )
                     }
@@ -71,11 +95,62 @@ class MainActivity : ComponentActivity() {
                             artistViewModel = artistViewModel,
                             collectorViewModel = collectorViewModel,
                             initialTab = 2,
+                            onCreateAlbumClick = {
+                                navController.navigate("create_album")
+                            },
                             onAlbumClick = { albumId ->
                                 navController.navigate("album_detail/$albumId")
                             },
                             onArtistClick = { artistId ->
                                 navController.navigate("artist_detail/$artistId")
+                            },
+                            onCollectorClick = { collectorId ->
+                                navController.navigate("collector_detail/$collectorId")
+                            }
+                        )
+                    }
+                    composable("home_collectors") {
+                        HomeScreen(
+                            albumViewModel = viewModel,
+                            artistViewModel = artistViewModel,
+                            collectorViewModel = collectorViewModel,
+                            initialTab = 3,
+                            onAlbumClick = { albumId ->
+                                navController.navigate("album_detail/$albumId")
+                            },
+                            onArtistClick = { artistId ->
+                                navController.navigate("artist_detail/$artistId")
+                            },
+                            onCollectorClick = { collectorId ->
+                                navController.navigate("collector_detail/$collectorId")
+                            }
+                        )
+                    }
+                    composable(
+                        route = "create_album"
+                    ) {
+                        CreateAlbumScreen(
+                            viewModel = createAlbumViewModel,
+                            onBack = { navController.popBackStack() },
+                            onBottomNavSelected = { index ->
+                                when (index) {
+                                    0 -> navController.navigate("home") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                    1 -> navController.navigate("home_albums") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                    2 -> navController.navigate("home_artists") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                    3 -> navController.navigate("home") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                }
+                            },
+                            onCreateSuccess = {
+                                viewModel.loadAlbums()
+                                navController.popBackStack()
                             }
                         )
                     }
@@ -91,6 +166,46 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate("home_albums") {
                                     popUpTo("home") { inclusive = true }
                                 }
+                            },
+                            onManageTracks = { id ->
+                                navController.navigate("album_tracks/$id")
+                            }
+                        )
+                    }
+                    composable(
+                        route = "album_tracks/{albumId}",
+                        arguments = listOf(navArgument("albumId") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val albumId = backStackEntry.arguments?.getInt("albumId") ?: -1
+                        val tracksViewModel: AlbumTracksViewModel = viewModel(
+                            viewModelStoreOwner = backStackEntry,
+                            factory = AppModule.albumTracksViewModelFactory
+                        )
+                        AlbumTracksScreen(
+                            viewModel = tracksViewModel,
+                            albumId = albumId,
+                            onBack = { navController.popBackStack() },
+                            onSaveTracklist = {
+                                viewModel.loadAlbums()
+                                navController.navigate("home_albums") {
+                                    popUpTo("home") { inclusive = true }
+                                }
+                            },
+                            onBottomNavSelected = { index ->
+                                when (index) {
+                                    0 -> navController.navigate("home") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                    1 -> navController.navigate("home_albums") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                    2 -> navController.navigate("home_artists") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                    3 -> navController.navigate("home_collectors") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                }
                             }
                         )
                     }
@@ -104,6 +219,21 @@ class MainActivity : ComponentActivity() {
                             artistId = artistId,
                             onBack = {
                                 navController.navigate("home_artists") {
+                                    popUpTo("home") { inclusive = true }
+                                }
+                            }
+                        )
+                    }
+                    composable(
+                        route = "collector_detail/{collectorId}",
+                        arguments = listOf(navArgument("collectorId") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val collectorId = backStackEntry.arguments?.getInt("collectorId") ?: -1
+                        CollectorDetailScreen(
+                            viewModel = collectorDetailViewModel,
+                            collectorId = collectorId,
+                            onBack = {
+                                navController.navigate("home_collectors") {
                                     popUpTo("home") { inclusive = true }
                                 }
                             }

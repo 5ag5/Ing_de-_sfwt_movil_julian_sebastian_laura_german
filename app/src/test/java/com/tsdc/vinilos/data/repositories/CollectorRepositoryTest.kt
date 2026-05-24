@@ -4,6 +4,9 @@ import com.tsdc.vinilos.data.local.dao.CollectorDao
 import com.tsdc.vinilos.data.remote.dto.AlbumDto
 import com.tsdc.vinilos.data.remote.dto.ArtistDto
 import com.tsdc.vinilos.data.remote.dto.CollectorDto
+import com.tsdc.vinilos.data.remote.dto.CreateAlbumRequest
+import com.tsdc.vinilos.data.remote.dto.TrackDto
+import com.tsdc.vinilos.data.remote.dto.TrackRequest
 import com.tsdc.vinilos.data.remote.network.ServiceAdapter
 import com.tsdc.vinilos.data.remote.network.VinilosApiService
 import com.tsdc.vinilos.domain.models.Album
@@ -36,6 +39,25 @@ class CollectorRepositoryTest {
         assertTrue(fakeApi.wasGetCollectorsCalled)
         assertEquals(expected, result)
     }
+
+    @Test
+    fun getCollectorById_returnsMappedCollectorFromApi() = runBlocking {
+        val dtos = listOf(
+            CollectorDto(301, "Ana", "3001112233", "ana@mail.com"),
+            CollectorDto(302, "Luis", "3004445566", "luis@mail.com")
+        )
+        val expected = Collector(301, "Ana", "3001112233", "ana@mail.com")
+
+        val fakeApi = FakeVinilosApiServiceForCollectors(dtos)
+        val collectorDao = mockk<CollectorDao>(relaxed = true)
+        val repository = CollectorRepository(ServiceAdapter(fakeApi), collectorDao)
+
+        val result = repository.getCollectorById(301)
+
+        assertTrue(fakeApi.wasGetCollectorByIdCalled)
+        assertEquals(301, fakeApi.lastRequestedCollectorId)
+        assertEquals(expected, result)
+    }
 }
 
 private class FakeVinilosApiServiceForCollectors(
@@ -45,9 +67,15 @@ private class FakeVinilosApiServiceForCollectors(
     var wasGetCollectorsCalled: Boolean = false
         private set
 
+    var wasGetCollectorByIdCalled: Boolean = false
+        private set
+
+    var lastRequestedCollectorId: Int? = null
+        private set
+
     override suspend fun getAlbums(): List<AlbumDto> = emptyList()
 
-    override suspend fun getAlbumById(albumId: Int): Album {
+    override suspend fun getAlbumById(albumId: Int): AlbumDto {
         error("no usado en test de coleccionistas")
     }
 
@@ -60,5 +88,21 @@ private class FakeVinilosApiServiceForCollectors(
     override suspend fun getCollectors(): List<CollectorDto> {
         wasGetCollectorsCalled = true
         return collectorsToReturn
+    }
+
+    override suspend fun getCollectorById(collectorId: Int): CollectorDto {
+        wasGetCollectorByIdCalled = true
+        lastRequestedCollectorId = collectorId
+        return collectorsToReturn.first { it.id == collectorId }
+    }
+
+    override suspend fun createAlbum(body: CreateAlbumRequest): AlbumDto {
+        error("no usado en test de coleccionistas")
+    }
+
+    override suspend fun getAlbumTracks(albumId: Int): List<TrackDto> = emptyList()
+
+    override suspend fun addTrackToAlbum(albumId: Int, track: TrackRequest): TrackDto {
+        error("no usado en test de coleccionistas")
     }
 }

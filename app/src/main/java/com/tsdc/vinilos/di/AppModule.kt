@@ -10,10 +10,14 @@ import com.tsdc.vinilos.data.repositories.CollectorRepository as CollectorReposi
 import com.tsdc.vinilos.domain.repositories.AlbumRepository
 import com.tsdc.vinilos.domain.repositories.ArtistRepository
 import com.tsdc.vinilos.domain.repositories.CollectorRepository
+import com.tsdc.vinilos.domain.usecases.AddTrackToAlbumUseCase
+import com.tsdc.vinilos.domain.usecases.CreateAlbumUseCase
 import com.tsdc.vinilos.domain.usecases.GetAlbumByIdUseCase
+import com.tsdc.vinilos.domain.usecases.GetAlbumTracksUseCase
 import com.tsdc.vinilos.domain.usecases.GetAlbumsUseCase
 import com.tsdc.vinilos.domain.usecases.GetArtistByIdUseCase
 import com.tsdc.vinilos.domain.usecases.GetArtistsUseCase
+import com.tsdc.vinilos.domain.usecases.GetCollectorByIdUseCase
 import com.tsdc.vinilos.domain.usecases.GetCollectorsUseCase
 import com.tsdc.vinilos.domain.usecases.IsFavoriteArtistUseCase
 import com.tsdc.vinilos.domain.usecases.ToggleFavoriteArtistUseCase
@@ -61,6 +65,26 @@ object AppModule {
         GetAlbumByIdUseCase(albumRepository)
     }
 
+    val createAlbumUseCase: CreateAlbumUseCase by lazy {
+        CreateAlbumUseCase(albumRepository)
+    }
+
+    val getAlbumTracksUseCase: GetAlbumTracksUseCase by lazy {
+        GetAlbumTracksUseCase(albumRepository)
+    }
+
+    val addTrackToAlbumUseCase: AddTrackToAlbumUseCase by lazy {
+        AddTrackToAlbumUseCase(albumRepository)
+    }
+
+    val albumTracksViewModelFactory: com.tsdc.vinilos.ui.viewmodels.AlbumTracksViewModelFactory by lazy {
+        com.tsdc.vinilos.ui.viewmodels.AlbumTracksViewModelFactory(
+            getAlbumTracksUseCase,
+            addTrackToAlbumUseCase,
+            getAlbumByIdUseCase
+        )
+    }
+
     val artistRepository: ArtistRepository by lazy {
         ArtistRepositoryImpl(serviceAdapter, database.favoriteArtistDao(), database.artistDao())
     }
@@ -87,5 +111,9 @@ object AppModule {
 
     val getCollectorsUseCase: GetCollectorsUseCase by lazy {
         GetCollectorsUseCase(collectorRepository)
+    }
+
+    val getCollectorByIdUseCase: GetCollectorByIdUseCase by lazy {
+        GetCollectorByIdUseCase(collectorRepository)
     }
 }

@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
+import com.tsdc.vinilos.ui.shared.constants.ColorConstants
+import com.tsdc.vinilos.ui.shared.constants.TextSizeConstants
 
 data class NavItem(val label: String, val icon: ImageVector)
 
@@ -36,30 +38,42 @@ fun VinilosNavBar(
         tonalElevation = Dp(4f)
     ) {
         vinilosNavItems.forEachIndexed { index, item ->
+            val isSelected = selectedIndex == index
+            val navContentColor = if (isSelected) {
+                ColorConstants.primaryBlue
+            } else {
+                ColorConstants.navUnselected
+            }
             NavigationBarItem(
-                selected = selectedIndex == index,
+                selected = isSelected,
                 onClick = { onItemSelected(index) },
                 icon = {
                     Icon(
                         imageVector = item.icon,
-                        contentDescription = item.label
+                        contentDescription = null,
+                        tint = navContentColor
                     )
                 },
                 label = {
                     Text(
                         text = item.label.uppercase(),
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold
+                        fontSize = TextSizeConstants.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = navContentColor
                     )
                 },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFF2B35BD),
-                    selectedTextColor = Color(0xFF2B35BD),
-                    indicatorColor = Color(0xFFE8EAFF),
-                    unselectedIconColor = Color(0xFF888888),
-                    unselectedTextColor = Color(0xFF888888)
-                )
+                alwaysShowLabel = true,
+                colors = vinilosNavigationBarItemColors()
             )
         }
     }
 }
+
+@Composable
+fun vinilosNavigationBarItemColors() = NavigationBarItemDefaults.colors(
+    selectedIconColor = ColorConstants.primaryBlue,
+    selectedTextColor = ColorConstants.primaryBlue,
+    indicatorColor = ColorConstants.lightBlue,
+    unselectedIconColor = ColorConstants.navUnselected,
+    unselectedTextColor = ColorConstants.navUnselected
+)

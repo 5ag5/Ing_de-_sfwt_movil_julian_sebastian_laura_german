@@ -69,6 +69,10 @@ object ColorConstants {
     val borderGray = Color(0xFFE1E4F2)
     val textLight = Color(0xFF4D4D4D)
 
+    val navUnselected = Color(0xFF5C5F66)
+
+    val accentGoldAccessible = Color(0xFF7A5200)
+
     // Semantic
     val errorRed = Color(0xFFB00020)
     val lightBackground = Color(0xFFF2F2F6)

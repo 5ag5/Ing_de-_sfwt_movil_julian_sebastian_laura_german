@@ -24,6 +24,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -54,7 +57,8 @@ fun AlbumDetailScreenPreview() {
             isLoading = false,
             error = null,
             onRetry = {},
-            onBack = {}
+            onBack = {},
+            onManageTracks = {}
         )
     }
 }
@@ -63,7 +67,8 @@ fun AlbumDetailScreenPreview() {
 fun AlbumDetailScreen(
     viewModel: AlbumDetailViewModel,
     albumId: Int,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onManageTracks: (Int) -> Unit = {}
 ) {
     val album by viewModel.album.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -78,7 +83,8 @@ fun AlbumDetailScreen(
         isLoading = isLoading,
         error = error,
         onRetry = { viewModel.loadAlbum(albumId) },
-        onBack = onBack
+        onBack = onBack,
+        onManageTracks = { album?.id?.let(onManageTracks) }
     )
 }
 
@@ -88,7 +94,8 @@ private fun AlbumDetailContent(
     isLoading: Boolean,
     error: String?,
     onRetry: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onManageTracks: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -103,7 +110,9 @@ private fun AlbumDetailContent(
             fontSize = 26.sp,
             fontWeight = FontWeight.ExtraBold,
             color = Color(0xFF1A1A2E),
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .semantics { heading() }
         )
 
         if (isLoading) {
@@ -138,23 +147,29 @@ private fun AlbumDetailContent(
             recordLabel = "-"
         )
 
-        AsyncImage(
-            model = currentAlbum.cover,
-            contentDescription = currentAlbum.name,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1.4f)
-                .clip(RoundedCornerShape(16.dp))
-        )
+        Column(
+            modifier = Modifier.semantics(mergeDescendants = true) {
+                contentDescription = "Álbum ${currentAlbum.name}"
+            }
+        ) {
+            AsyncImage(
+                model = currentAlbum.cover,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1.4f)
+                    .clip(RoundedCornerShape(16.dp))
+            )
 
-        Text(
-            text = currentAlbum.name,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = Color(0xFF1A1A2E),
-            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-        )
+            Text(
+                text = currentAlbum.name,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color(0xFF1A1A2E),
+                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+            )
+        }
 
         Card(
             shape = RoundedCornerShape(12.dp),
@@ -185,6 +200,16 @@ private fun AlbumDetailContent(
         )
 
         Spacer(modifier = Modifier.height(20.dp))
+        Button(
+            onClick = onManageTracks,
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF111111)),
+            modifier = Modifier
+                .testTag(UiTestTags.ALBUM_DETAIL_TRACKS_BUTTON)
+                .fillMaxWidth()
+        ) {
+            Text(text = "Manage Tracklist", color = Color.White)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = onBack,
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2B35BD)),
